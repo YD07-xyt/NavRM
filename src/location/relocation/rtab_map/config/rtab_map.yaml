@@ -1,0 +1,31 @@
+# 通用参数（建图+重定位共享）
+rtabmap_common:
+  ros__parameters:
+    use_sim_time: false
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    subscribe_rgb: true
+    subscribe_scan: true
+    subscribe_scan_cloud: true
+    approx_sync: true
+    sync_tolerance: 0.05       # 传感器同步容忍时间（50ms）
+    scan_cloud_max_depth: 100.0 # Mid360最大测距
+    scan_cloud_min_depth: 0.1
+    rtabmap_args: "--delete_db_on_start false"
+
+# 建图模式参数
+rtabmap_mapping:
+  ros__parameters:
+    mode: "mapping"
+    save_db: true
+    database_path: "/map/rtabmap.db"  # 地图保存路径
+    rtabmap_args: "--delete_db_on_start"  # 建图前清空旧地图
+
+# 重定位模式参数
+rtabmap_localization:
+  ros__parameters:
+    mode: "localization"
+    enable_relocalization: true
+    relocalization_score: 40  # 重定位匹配阈值
+    database_path: "/map/rtabmap.db"  # 地图加载路径
+    rtabmap_args: "--delete_db_on_start false"  # 不删除现有地图
