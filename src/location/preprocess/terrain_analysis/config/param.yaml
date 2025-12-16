@@ -6,7 +6,7 @@ terrain_analysis:
     clearingDis: 4.0                    # 该距离外的点会被清除
     useSorting: True                    # 这个参数开起来就能上坡了；如果 use_sorting,那么就以周围点中的分位点作为地面点，否则以最低点作为地面点；周围其余点相对于地面点的高度作为通过代价，所以对于坡面，有的点的代价是正，有的是负，就相互抵消了；不要与 consider_drop 同时开启，计算上会有冲突
     quantileZ: 0.2                      # useful if use_sorting is enabled.
-    considerDrop: False                 # 考虑凹下去的地面,开启则将相对于地面点的高度取绝对值
+    considerDrop: True                 # 考虑凹下去的地面,开启则将相对于地面点的高度取绝对值
     limitGroundLift: False
     maxGroundLift: 0.3
     clearDyObs: True                    # 清除动态物体的话，有动态物体走过的地方就走不了了
@@ -23,6 +23,6 @@ terrain_analysis:
     vehicleHeight: 1.0                 # 小于车辆高度的点才会进行处理
     voxelPointUpdateThre: 100
     voxelTimeUpdateThre: 1.0
-    minRelZ: 0.0                       # min_rel_z 以及 max_rel_z 限制了有效点云点的Z值范围，用于对天花板和地板进行处理
+    minRelZ: -1.5                       # min_rel_z 以及 max_rel_z 限制了有效点云点的Z值范围，用于对天花板和地板进行处理
     maxRelZ: 0.55
     disRatioZ: 0.2                      # Z 值的最大最小范围由这两个值决定，但是并不等于这两个值，是有一个比例关系的，距离机器人越远，限定范围就越大，这其中考虑了坡度
