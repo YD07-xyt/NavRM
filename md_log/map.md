@@ -122,4 +122,20 @@ target_include_directories( Example
      bash正常
 
 ## 12.18
-    
+
+1. 自瞄接口aim_driver
+    (1) 自定义msg
+        a.msg本身文件第1个字母must 大写 belike: Control.msg 并非 control,msg
+        b.cmake编译找不到头文件"aim_driver/msg/Control.hpp"，
+            原因： Control.hpp第1个字母大写了 ，应该是aim_driver/msg/control.hpp
+            ？？？？？？？？？？？？？？？？
+            what can I say ?
+            ？？？？？？？？？？？？？？？？
+        c.  "AimDriver::msg::Control" 报错
+        原因： AimDriver为类的名字， 实际注册为的包名
+        改为aim_driver::msg::Control
+        类似：
+```bash
+    error: parse error in template argument list   
+    send_pub_ = this->create_publisher<AimDriver::msg::Control>("/sentry_to_aim_data", 10);
+```

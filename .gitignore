@@ -2,5 +2,5 @@
 /install/
 /log/
 /.cache
-/navigation2_tutorials
+/src/bringup/pcd/
 /compile_commands.json
