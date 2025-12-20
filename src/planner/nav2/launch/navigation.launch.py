@@ -91,7 +91,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(bringup_dir, 'config', 'nav2_params.yaml'),
+        default_value=os.path.join(bringup_dir, 'config', 'nav2_param.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_autostart_cmd = DeclareLaunchArgument(
@@ -311,7 +311,7 @@ def generate_launch_description():
     #         parameters=[ground_segmentation_node_param])
     
     rviz_config_file = os.path.join(
-    get_package_share_directory('sentry_bringup'), 'rviz', 'nav2_default_view.rviz')
+    get_package_share_directory('bringup'), 'rviz', 'map.rviz')
     start_rviz = Node(
         package='rviz2',
         executable='rviz2',
