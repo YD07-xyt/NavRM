@@ -127,15 +127,26 @@ target_include_directories( Example
     (1) 自定义msg
         a.msg本身文件第1个字母must 大写 belike: Control.msg 并非 control,msg
         b.cmake编译找不到头文件"aim_driver/msg/Control.hpp"，
-            原因： Control.hpp第1个字母大写了 ，应该是aim_driver/msg/control.hpp
+            ***原因： Control.hpp第1个字母大写了 ，应该是aim_driver/msg/control.hpp***
             ？？？？？？？？？？？？？？？？
             what can I say ?
             ？？？？？？？？？？？？？？？？
         c.  "AimDriver::msg::Control" 报错
-        原因： AimDriver为类的名字， 实际注册为的包名
+        ***原因： AimDriver为类的名字， 实际注册为的包名***
         改为aim_driver::msg::Control
         类似：
 ```bash
     error: parse error in template argument list   
     send_pub_ = this->create_publisher<AimDriver::msg::Control>("/sentry_to_aim_data", 10);
 ```
+
+2. 解决linefit_ground_segmentation_ros2的输出的点云无深度信息(来源：pointcloud_to_laserscan报错)
+
+    应该是输入的点云太少(来自里程计)，
+    输入livox的点云，成功转为scan
+
+3. small_gicp中pcl/pcl_point.hpp 找不到pcl的<pcl/point_types.h>
+    软链接 
+    ```bash
+    sudo cp -r /usr/local/include/pcl-1.15/pcl  /usr/local/include
+    ```

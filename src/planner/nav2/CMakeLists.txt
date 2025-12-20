@@ -67,7 +67,7 @@ target_include_directories(nav2
 # )
 
 # 禁用 boost
-target_compile_definitions(global_planner PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
+target_compile_definitions(nav2 PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 
 #############
 ## Install ##
@@ -80,6 +80,13 @@ install(TARGETS nav2
     # RUNTIME DESTINATION 通常用于可执行文件，不是库文件
     # 如果确实有可执行文件，使用：
     # RUNTIME DESTINATION bin
+)
+
+
+install(DIRECTORY
+  launch
+  config
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 install(DIRECTORY include/

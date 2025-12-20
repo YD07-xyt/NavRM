@@ -16,7 +16,7 @@ def generate_launch_description():
             # remappings=[('cloud_in',  ['/livox/lidar/pointcloud']),
             # remappings=[('cloud_in',  ['cloud_registered_body']),
             remappings=[('cloud_in',  ['/terrain_map_ext']),            
-                        ('scan',  ['/scan'])],
+                        ('scan',  ['/obstacle_scan'])],
             parameters=[{
                 'target_frame': 'odom',
                 'transform_tolerance': 0.01, 
