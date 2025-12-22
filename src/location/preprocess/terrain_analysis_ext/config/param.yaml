@@ -5,7 +5,7 @@ terrain_analysis_ext:
     noDecayDis: 0.0
     clearingDis: 20.0
     useSorting: true
-    quantileZ: 0.2
+    quantileZ: 0.16
     vehicleHeight: 1.0
     voxelPointUpdateThre: 100
     voxelTimeUpdateThre: 2.0

@@ -1,6 +1,8 @@
 small_gicp_node:
   ros_parameter:
-    pcd_path: "src/"
+    map_frame: "map"
+    odom_frame: "odom"
+    pcd_path: "src/bringup/pcd/rmuc_2026.pcd"
     num_threads : 4
     num_neighbors : 20
     leaf_size: 0.25
