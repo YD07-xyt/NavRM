@@ -142,6 +142,7 @@ void SmallGicpRelocalizationNode::registeredPcdCallback(
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr scan(new pcl::PointCloud<pcl::PointXYZ>());
   pcl::fromROSMsg(*msg, *scan);
+  //RCLCPP_INFO(get_logger(),"存在%f",scan->points.begin()->x);
   *accumulated_cloud_ += *scan;
 }
 

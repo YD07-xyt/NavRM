@@ -267,7 +267,7 @@ local_costmap:
         # robot is non-circular for optimized first-order collision checking.
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 5.0
-        inflation_radius: 0.4
+        inflation_radius: 0.1
       local_obstacle_layer:
         plugin: "costmap_intensity::ObstacleLayerIntensity"
         enabled: True
@@ -329,7 +329,7 @@ global_costmap:
       global_inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 10.0
-        inflation_radius: 0.5
+        inflation_radius: 0.1
       always_send_full_costmap: True
       # global_obstacle_layer:
       #   plugin: "costmap_intensity::ObstacleLayerIntensity"

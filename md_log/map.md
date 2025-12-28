@@ -1,5 +1,26 @@
 # map log problem
 
+##
+2. rviz2 中地图显示
+
+
+
+3. small_gicp_relocalization无法链接pcl
+解决： package.xml中
+加入
+```bash
+  <depend>pcl_ros</depend>
+  <depend>libpcl-all-dev</depend>
+```
+
+2.small_gicp_relocalization 无数据
+
+```bash
+[small_gicp_relocalization_node-1] [WARN] [1766933505.153589734] [small_gicp_relocalization]: No accumulated points to process.
+[small_gicp_relocalization_node-1] [WARN] [1766933506.177623403] [small_gicp_relocalization]: GICP did not converge.
+```
+
+
 ## 12.17
 
 1. 框架： livox_ros_driver2 -> small_point_lio -> terrain_analysis ->  terrain_analysis_ext ->pointcloud_to_laserscan 
