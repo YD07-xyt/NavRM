@@ -47,8 +47,6 @@ namespace map {
      */
         virtual void point_cloud_callback(
             sensor_msgs::msg::PointCloud2::SharedPtr msg) = 0;
-        virtual void point_cloud_callback(
-            pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud) = 0;
         /**
     * @brief: 点云预处理
     */

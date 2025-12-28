@@ -1,9 +1,11 @@
 #include "map/global_map.hpp"
 
 namespace map {
-    GlobalMap::GlobalMap()
-        : Node("GlobalMap")
+    GlobalMap::GlobalMap(const rclcpp::NodeOptions &options)
+        : Node("GlobalMap",options)
     {
+        this->init_parameter();
+
         pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud(
             new pcl::PointCloud<pcl::PointXYZ>);
         auto test =
@@ -13,7 +15,8 @@ namespace map {
                 "无法读取PCD文件:%s",
                 pcd_file_path.c_str());
         }
-        this->point_cloud_callback(pcl_cloud);
+        this->init_global_map();
+        this->read_pcl(pcl_cloud);
         map_pub =
             this->create_publisher<grid_map_msgs::msg::GridMap>("/global_map",
                 10);
@@ -34,7 +37,7 @@ namespace map {
         this->global_map.add("esdf", 0.0);// ESDF层（基于障碍物层）
     }
 
-    void GlobalMap::point_cloud_callback(
+    void GlobalMap::read_pcl(
         pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud)
     {
         global_map.clear("height");
@@ -45,7 +48,20 @@ namespace map {
         pcl_cloud = preprocess_point_cloud(pcl_cloud);
         get_global_map(pcl_cloud);
     }
+        void GlobalMap::point_cloud_callback(
+        sensor_msgs::msg::PointCloud2::SharedPtr msg)
+    {
+        global_map.clear("height");
+        global_map.clear("ground");
+        global_map.clear("obstacle");
 
+        pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud(
+            new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::fromROSMsg(*msg, *pcl_cloud);
+        // 2. 预处理：过滤无效点+降采样（提升效率）
+        pcl_cloud = preprocess_point_cloud(pcl_cloud);
+        get_global_map(pcl_cloud);
+    }
     grid_map::GridMap GlobalMap::get_global_map(
         pcl::PointCloud<pcl::PointXYZ>::Ptr& pcl_cloud)
     {
@@ -115,6 +131,7 @@ namespace map {
         grid_map_msg.header.stamp = this->now();
         grid_map_msg.header.frame_id = global_map_config.map_frame;
         map_pub->publish(grid_map_msg);
+        return this->global_map;
     }
 
     grid_map::GridMap GlobalMap::get_esdf_layer(grid_map::GridMap global_map)
@@ -138,6 +155,7 @@ namespace map {
             double distance = esdf.getDistanceAt(pos_3d);
             esdf_layer(index(0), index(1)) = distance;
         }
+        return this->global_map;
     }
 
     grid_map::GridMap GlobalMap::fill_nan_heights(grid_map::GridMap global_map)
@@ -209,7 +227,7 @@ namespace map {
             0.05);
         this->declare_parameter<double>("global_map.voxel_leaf_size", 0.05);
         this->declare_parameter<double>("global_map.max_point_height", 2.0);
-        this->declare_parameter<std::string>("pcd", "src/bringup/pcd");
+        this->declare_parameter<std::string>("pcd", "src/bringup/pcd/rmuc_2025.pcd");
         this->global_map_config.map_frame =
             this->get_parameter("global_map.map_frame").as_string();
         this->global_map_config.resolution =

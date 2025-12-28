@@ -1,8 +1,10 @@
 #include "map/local_map.hpp"
 namespace map {
-    LocalMap::LocalMap()
-        : Node("LocalMap")
+    LocalMap::LocalMap(const rclcpp::NodeOptions &options)
+        : Node("LocalMap",options)
     {
+        this->init_parameter();
+        this->init_local_map();
         point_cloud_sub =
             this->create_subscription<sensor_msgs::msg::PointCloud2>("/points2",
                 10,
@@ -114,6 +116,7 @@ namespace map {
         grid_map_msg.header.stamp = this->now();
         grid_map_msg.header.frame_id = Local_map_config.map_frame;
         map_pub->publish(grid_map_msg);
+        return this->local_map;
     }
 
     grid_map::GridMap LocalMap::get_esdf_layer(grid_map::GridMap local_map)
@@ -139,6 +142,7 @@ namespace map {
             double distance = esdf.getDistanceAt(pos_3d);
             esdf_layer(index(0), index(1)) = distance;
         }
+        return this->local_map;
     }
 
     grid_map::GridMap LocalMap::fill_nan_heights(grid_map::GridMap local_map)

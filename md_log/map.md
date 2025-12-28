@@ -1,5 +1,35 @@
 # map log problem
 
+
+## 
+3.eigen pcl 内存对齐不匹配
+```bash
+/usr/local/include/pcl/memory.h:63:2: error: #warning "Potential runtime error due to aligned malloc mismatch! You likely have to compile your code with AVX enabled or define EIGEN_MAX_ALIGN_BYTES=32 (to silence this message at your own risk, define PCL_SILENCE_MALLOC_WARNING=1)" [-Werror=cpp]
+   63 | #warning "Potential runtime error due to aligned malloc mismatch! You likely have to compile your code with AVX enabled or define EIGEN_MAX_ALIGN_BYTES=32 (to silence this message at your own risk, define PCL_SILENCE_MALLOC_WARNING=1)"
+      |  ^~~~~~~
+```
+解决：
+```bash
+target_compile_options(${PROJECT_NAME}
+  PRIVATE
+    -mavx
+)
+``` 
+
+2. 点云切割patchwork-plusplus 
+
+1.zsh bash 与ros2的兼容性问题 
+运行 source install/setup.bash时报错：
+```bash
+➜  NavRM git:(ego) ✗ source install/setup.bash                  
+/opt/ros/humble/local_setup.bash:.:11: 没有那个文件或目录: /home/xyt/My/nav/NavRM/local_setup.sh
+not found: "/home/xyt/My/nav/NavRM/local_setup.bash"
+```
+解决：
+运行 source install/setup.zsh
+
+
+
 ## 12.17
 
 1. 框架： livox_ros_driver2 -> small_point_lio -> terrain_analysis ->  terrain_analysis_ext ->pointcloud_to_laserscan 

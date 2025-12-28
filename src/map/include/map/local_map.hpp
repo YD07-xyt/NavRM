@@ -1,9 +1,11 @@
+#pragma once 
+#ifndef MAP_LOCAL_MAP_HPP
+#define MAP_LOCAL_MAP_HPP
 #include "map/map.hpp"
-
 namespace map {
-class LocalMap: public Map , rclcpp::Node{
+class LocalMap: public Map ,  public rclcpp::Node{
 public:
-    LocalMap();
+   explicit LocalMap(const rclcpp::NodeOptions &options = rclcpp::NodeOptions());
     void init_local_map();
 
 private:
@@ -19,3 +21,9 @@ private:
     MapConfig Local_map_config;
 };
 } // namespace map
+
+
+#include "rclcpp_components/register_node_macro.hpp"
+
+RCLCPP_COMPONENTS_REGISTER_NODE(map::LocalMap)
+#endif  // MAP_LOCAL_MAP_HPP

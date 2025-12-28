@@ -7,18 +7,17 @@ endif()
 
 find_package(Boost REQUIRED COMPONENTS date_time)
 
-
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(grid_map_core)
-find_package(grid_map_ros)
-find_package(grid_map_msgs)
+find_package(grid_map_core REQUIRED)
+find_package(grid_map_ros REQUIRED)
+find_package(grid_map_msgs REQUIRED)
 find_package(grid_map_filters REQUIRED)
 find_package(pcl_ros REQUIRED)
 find_package(pcl_conversions REQUIRED)
-find_package(sensor_msgs)
-find_package(nav_msgs)
+find_package(sensor_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 set(dependencies
@@ -44,6 +43,8 @@ ament_target_dependencies(map PUBLIC ${dependencies})
 target_include_directories(map
   PUBLIC
   ${Boost_LIBRARIES}
+  grid_map::grid_map_core
+  grid_map::grid_map_ros
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -56,6 +57,8 @@ ament_target_dependencies(global_map PUBLIC ${dependencies})
 target_include_directories(global_map
   PUBLIC
   ${Boost_LIBRARIES}
+  grid_map::grid_map_core
+  grid_map::grid_map_ros
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -69,8 +72,20 @@ ament_target_dependencies(local_map PUBLIC ${dependencies})
 target_include_directories(local_map
   PUBLIC
   ${Boost_LIBRARIES}
+  grid_map::grid_map_core
+  grid_map::grid_map_ros
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
+)
+
+rclcpp_components_register_node(local_map
+  PLUGIN map::LocalMap
+  EXECUTABLE local_map_node
+)
+
+rclcpp_components_register_node(global_map
+  PLUGIN map::GlobalMap
+  EXECUTABLE global_map_node
 )
 # 安装两个库
 install(TARGETS global_map  local_map
@@ -99,6 +114,6 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(map)
+ament_export_libraries(map, global_map ,local_map)
 ament_export_dependencies(${dependencies})
 ament_package()
