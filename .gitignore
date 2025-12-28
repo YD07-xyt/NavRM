@@ -5,3 +5,4 @@
 /src/bringup/pcd/
 /compile_commands.json
 *pcd
+src/location/odometer/plain_slam_ros2/pcd/
