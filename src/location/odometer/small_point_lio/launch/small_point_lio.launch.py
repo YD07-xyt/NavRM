@@ -20,23 +20,23 @@ def generate_launch_description():
             )
         ],
     )
-    #[0.127,0.075,-0.435,-0.102,0.5044,-1.57]
+    #[0.127,0.075,-0.433,-0.102,0.5044,-1.57]
     static_base_link_to_livox_frame = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
         arguments=[
             "--x",
-            "-0.127",
+            "-0",
             "--y",
-            "-0.075",
+            "-0",
             "--z",
-            "0.433",
+            "0",
             "--roll",
-            "0.102",
+            "0",
             "--pitch",
-            "-0.5044",
+            "-0",
             "--yaw",
-            "1.57",
+            "0.0",
             "--frame-id",
             "base_link",
             "--child-frame-id",
