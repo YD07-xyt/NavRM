@@ -8,7 +8,7 @@ namespace test {
         : rclcpp::Node("pcl_publisher_node")
     {
         test_lidar_pub_ =
-            this->create_publisher<sensor_msgs::msg::PointCloud2>("/test_lidar",
+            this->create_publisher<sensor_msgs::msg::PointCloud2>("/livox/lidar",
                 10);
         this->pcd_path = "src/test/pcl_publisher/pcd/test.pcd";
         pcl::PointCloud<pcl::PointXYZ>::Ptr pcd_cloud(
