@@ -311,7 +311,7 @@ def generate_launch_description():
     #         parameters=[ground_segmentation_node_param])
     
     rviz_config_file = os.path.join(
-    get_package_share_directory('bringup'), 'rviz', 'map.rviz')
+    get_package_share_directory('nav2'), 'rviz', 'map.rviz')
     start_rviz = Node(
         package='rviz2',
         executable='rviz2',
