@@ -38,19 +38,19 @@ def generate_launch_description():
 
     declare_lidar_frame = DeclareLaunchArgument(
         "lidar_frame",
-        default_value="front_mid360",
+        default_value="livox_frame",
         description="Frame ID for LiDAR sensor",
     )
 
     declare_base_frame = DeclareLaunchArgument(
         "base_frame",
-        default_value="chassis",
+        default_value="base_link",
         description="Frame ID for Vehicle Base",
     )
 
     declare_robot_base_frame = DeclareLaunchArgument(
         "robot_base_frame",
-        default_value="gimbal_yaw",
+        default_value="base_link",
         description="Frame ID for Gimbal",
     )
 
