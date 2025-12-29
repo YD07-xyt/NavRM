@@ -43,7 +43,7 @@ def generate_launch_description():
                 "base_frame": "base_link",
                 "lidar_frame": "livox_frame",
                 "prior_pcd_file": "src/location/odometer/small_point_lio/pcd/scan.pcd",
-                "input_cloud_topic": "/livox/lidar",
+                "input_cloud_topic": "/cloud_registered",
             }
         ],
     )

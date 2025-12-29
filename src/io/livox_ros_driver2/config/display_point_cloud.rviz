@@ -56,7 +56,7 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 163
+      Max Intensity: 155
       Min Color: 0; 0; 0
       Min Intensity: 0
       Name: PointCloud2
@@ -78,7 +78,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: lidar_frame
+    Fixed Frame: livox_frame
     Frame Rate: 30
   Name: root
   Tools:
@@ -119,7 +119,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 14.215983390808105
+      Distance: 25.350696563720703
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -134,10 +134,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.41039836406707764
+      Pitch: 1.0303982496261597
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.245394706726074
+      Yaw: 2.4004032611846924
     Saved: ~
 Window Geometry:
   Displays:

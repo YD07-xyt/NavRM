@@ -272,11 +272,11 @@ def generate_launch_description():
         ],
     )
     
-    start_terrain_analysis = IncludeLaunchDescription(
-        FrontendLaunchDescriptionSource(os.path.join(
-        get_package_share_directory('terrain_analysis'), 'launch', 'terrain_analysis.launch')
-        )
-    )
+    # start_terrain_analysis = IncludeLaunchDescription(
+    #     FrontendLaunchDescriptionSource(os.path.join(
+    #     get_package_share_directory('terrain_analysis'), 'launch', 'terrain_analysis.launch')
+    #     )
+    # )
     
     # start_terrain_analysis_t = Node(
     #     package='sensor_scan_generation',
@@ -286,14 +286,14 @@ def generate_launch_description():
     #                     ('/sensor_scan', '/terrain_map_at_scan')]
     # )
 
-    start_terrain_analysis_ext = IncludeLaunchDescription(
-        FrontendLaunchDescriptionSource(os.path.join(
-        get_package_share_directory('terrain_analysis_ext'), 'launch', 'terrain_analysis_ext.launch')
-        ),
-        # launch_arguments={
-        # 'checkTerrainConn': checkTerrainConn,
-        # }.items()
-    )
+    # start_terrain_analysis_ext = IncludeLaunchDescription(
+    #     FrontendLaunchDescriptionSource(os.path.join(
+    #     get_package_share_directory('terrain_analysis_ext'), 'launch', 'terrain_analysis_ext.launch')
+    #     ),
+    #     # launch_arguments={
+    #     # 'checkTerrainConn': checkTerrainConn,
+    #     # }.items()
+    # )
     
     # start_terrain_analysis_ext_t = Node(
     #     package='sensor_scan_generation',
@@ -335,7 +335,7 @@ def generate_launch_description():
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
     # add terrain analysis
-    ld.add_action(start_terrain_analysis)
+    #ld.add_action(start_terrain_analysis)
     # ld.add_action(start_terrain_analysis_ext)
     # ld.add_action(ground_segmentation_node)
     # Add the actions to launch all of the navigation nodes

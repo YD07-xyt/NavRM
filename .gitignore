@@ -8,3 +8,4 @@
 *pcd
 /src/location/odometer/plain_slam_ros2/pcd/
 /src/location/odometer/small_point_lio/pcd/
+/src/location/odometer/small_point_lio/pcd/scan.pcd
