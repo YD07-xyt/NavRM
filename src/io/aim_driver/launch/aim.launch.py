@@ -9,8 +9,8 @@ def generate_launch_description():
 
     aim_driver_node = Node(
         package='aim_driver',
-        executable='aim_driver_node',
-        namespace='',
+        executable='aim_driver_exec',
+        namespace='aim_driver',
         output='screen',
         emulate_tty=True,
     )

@@ -50,7 +50,7 @@ def generate_launch_description():
 
     declare_robot_base_frame = DeclareLaunchArgument(
         "robot_base_frame",
-        default_value="base_link",
+        default_value="base_li",
         description="Frame ID for Gimbal",
     )
 
