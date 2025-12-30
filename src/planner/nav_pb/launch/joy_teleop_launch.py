@@ -26,7 +26,7 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
     # Get the package directory
-    bringup_dir = get_package_share_directory("pb2025_nav_bringup")
+    bringup_dir = get_package_share_directory("nav_pb")
 
     # Create the launch configuration variables
     namespace = LaunchConfiguration("namespace")

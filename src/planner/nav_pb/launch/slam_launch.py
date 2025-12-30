@@ -25,7 +25,7 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 
 def generate_launch_description():
     # Getting directories and launch-files
-    bringup_dir = get_package_share_directory("pb2025_nav_bringup")
+    bringup_dir = get_package_share_directory("nav_pb")
 
     # Input parameters declaration
     namespace = LaunchConfiguration("namespace")
