@@ -59,7 +59,7 @@ RUN pip install --upgrade pip
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 
-RUN pip install xmacro gdown
+RUN pip install xmacro gdown numpy
 #使用 gitclone.com 代理（稳定性高，兼容大部分网络环境）
 #RUN git config --global url."https://gitclone.com/github.com/".insteadOf "https://github.com/"
 RUN git config --global http.proxy http://192.168.1.251:7897 && \
