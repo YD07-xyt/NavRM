@@ -2,23 +2,10 @@
 
 
 ##
-5. dockerfile中配置git代理
-加入
-
-http://主机ip: clash的代理ip
-
-```bash
-RUN git config --global http.proxy http://192.168.1.251:7897 && \
-    git config --global https.proxy http://192.168.1.251:7897
-```
-主机clash中开全局代理，局域网链接 ，代理ip查看 
-
-查看主机IP:
-```bash
-ip a
-```
-
-1. rviz2 中地图显示
+1. docker使用
+    [docker](docker.md)
+    
+2. rviz2 中地图显示
 
 
 
@@ -30,7 +17,7 @@ ip a
   <depend>libpcl-all-dev</depend>
 ```
 
-2.small_gicp_relocalization 无数据
+4.small_gicp_relocalization 无数据
 
 ```bash
 [small_gicp_relocalization_node-1] [WARN] [1766933505.153589734] [small_gicp_relocalization]: No accumulated points to process.

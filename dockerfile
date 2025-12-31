@@ -60,7 +60,7 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 
 RUN pip install xmacro gdown
-#使用 gitclone.com 代理（稳定性高，兼容大部分网络环境）
+#使用 gitclone.com 代理
 #RUN git config --global url."https://gitclone.com/github.com/".insteadOf "https://github.com/"
 RUN git config --global http.proxy http://192.168.1.251:7897 && \
     git config --global https.proxy http://192.168.1.251:7897
@@ -85,6 +85,9 @@ RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 
 # 克隆 NavRM 到 /root/NavRM
 RUN git clone https://github.com/YD07-xyt/NavRM.git /root/NavRM
+# COPY src /root/NavRM/src
+# COPY sh  /root/NavRM/sh
+
 
 # 进入 NavRM 目录后执行 rosdep install
 WORKDIR /root/NavRM
