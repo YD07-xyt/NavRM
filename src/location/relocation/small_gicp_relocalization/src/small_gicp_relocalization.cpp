@@ -142,6 +142,7 @@ void SmallGicpRelocalizationNode::registeredPcdCallback(
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr scan(new pcl::PointCloud<pcl::PointXYZ>());
   pcl::fromROSMsg(*msg, *scan);
+  //RCLCPP_INFO(get_logger(),"存在%f",scan->points.begin()->x);
   *accumulated_cloud_ += *scan;
 }
 
@@ -173,6 +174,11 @@ void SmallGicpRelocalizationNode::performRegistration()
 
   if (result.converged) {
     result_t_ = previous_result_t_ = result.T_target_source;
+    if (register_timer_) {  // 先判断定时器是否有效，避免空指针访问
+      register_timer_->cancel();  // 核心方法：停止定时器
+      register_timer_.reset();    // 可选：置空智能指针，释放资源（推荐）
+      RCLCPP_INFO(this->get_logger(), "GICP converged, timer stopped.");
+    }
   } else {
     RCLCPP_WARN(this->get_logger(), "GICP did not converge.");
   }

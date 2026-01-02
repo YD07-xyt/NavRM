@@ -7,7 +7,8 @@
 #if defined(__GNUC__)
 #define PACK(__Declaration__) __Declaration__ __attribute__((__packed__))
 #elif defined(_MSC_VER)
-#define PACK(__Declaration__) __pragma(pack(push, 1)) __Declaration__ __pragma(pack(pop))
+#define PACK(__Declaration__)                                                  \
+    __pragma(pack(push, 1)) __Declaration__ __pragma(pack(pop))
 #else
 #error not support packed struct
 #endif
@@ -26,22 +27,13 @@ namespace serial_driver {
         bool is_use_top; // 是否使用小陀螺
         uint8_t priority;// 优先级   0x00-导航优先  0x01-视觉优先
 
-        // 裁判系统相关
-        // uint8_t intention;        // 0x00-表示不管该路径数据  0x01-到目标点攻击  0x02-到目标点防守  0x03-移动到目标点
-        // uint16_t start_position_x;// 路径起点x轴坐标
-        // uint16_t start_position_y;// 路径起点y轴坐标
-        // uint8_t delta_x[49];      // 路径点x轴增量数组，单位：dm
-        // uint8_t delta_y[49];      // 路径点y轴增量数组，单位：dm
-
-        //uint8_t uart_end = 0xFE;
-
         uint16_t crc16;
     };
     struct __attribute__((packed)) ReceivePacket {
         uint8_t hearder[2] = {'M', 'A'};
 
         uint16_t crc16;
-    }; 
+    };
     // inline ReceivePacket fromVector(const std::vector<uint8_t> &data) {
     //     ReceivePacket packet;
     //     if (data.size() == sizeof(ReceivePacket)) {
@@ -49,6 +41,40 @@ namespace serial_driver {
     //     }
     //     return packet;
     // }
+
+
+    //################################################################//
+    const uint8_t SOF_SEND = {'M'};
+    // Send
+    const uint8_t ID_ROBOT_CMD = 0x01;
+
+    const uint8_t DEBUG_PACKAGE_NUM = 10;
+    const uint8_t DEBUG_PACKAGE_NAME_LEN = 10;
+
+    struct HeaderFrame {
+        uint8_t sof;// 数据帧起始字节，固定值为 M
+        uint8_t len;// 数据段长度
+        uint8_t id; // 数据段id
+        uint8_t crc;// 数据帧头的 CRC8 校验
+    } __attribute__((packed));
+
+    struct SendRobotCmdData {
+        HeaderFrame frame_header;
+        uint8_t is_rotate;
+        //时间戳（基于下位机运行时间)
+        uint32_t time_stamp;
+
+        struct {
+            // 速度
+            struct {
+                float vx;
+                float vy;
+                float wz;
+            } __attribute__((packed)) speed_vector;
+        } __attribute__((packed)) data;
+
+        uint16_t checksum;
+    } __attribute__((packed));
 
 }// namespace serial_driver
 

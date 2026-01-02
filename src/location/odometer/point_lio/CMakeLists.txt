@@ -40,6 +40,7 @@ endif()
 
 # Find packages
 find_package(ament_cmake REQUIRED)
+find_package(Boost REQUIRED COMPONENTS date_time)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -53,8 +54,7 @@ find_package(livox_ros_driver2 REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(glog REQUIRED)
 find_package(OpenMP QUIET)
-find_package(PythonLibs REQUIRED) 
-find_package(Boost REQUIRED COMPONENTS date_time) # 保留Boost查找
+find_package(PythonLibs REQUIRED) # Consider using Pybind11 for ROS2
 find_path(MATPLOTLIB_CPP_INCLUDE_DIRS "matplotlibcpp.h")
 
 if(OPENMP_FOUND)
@@ -67,13 +67,11 @@ include_directories(
   ${EIGEN3_INCLUDE_DIR}
   ${PCL_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS} # 保留Boost头文件
 )
 
 link_directories(
   include
   ${PCL_LIBRARY_DIRS}
-  ${Boost_LIBRARY_DIRS} # 新增Boost库目录
 )
 
 # Declare a ROS2 executable
@@ -99,14 +97,13 @@ ament_target_dependencies(pointlio_mapping
   livox_ros_driver2
 )
 
-# 关键修改：将 Boost::date_time 改为 ${Boost_LIBRARIES}
-target_link_libraries(pointlio_mapping 
-  ${PCL_LIBRARIES} 
-  ${PYTHON_LIBRARIES}
-  ${Boost_LIBRARIES} # 改用传统变量，兼容所有系统
-)
+target_link_libraries(pointlio_mapping ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
 target_include_directories(pointlio_mapping PRIVATE ${PYTHON_INCLUDE_DIRS})
-
+target_include_directories( pointlio_mapping
+  PUBLIC
+  ${Boost_LIBRARIES}
+  #其他
+)
 # Install the executable
 install(TARGETS
   pointlio_mapping
@@ -131,7 +128,6 @@ ament_export_dependencies(
   livox_ros_driver2
   Eigen3
   PCL
-  Boost # 保留导出
 )
 
 ament_package()

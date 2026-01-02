@@ -30,19 +30,19 @@ namespace serial_driver {
         ~RMSerialDriver() override;
 
     private:
-        void getParams();
+        void get_params();
 
-        void sendPacket(const geometry_msgs::msg::Twist::SharedPtr msg);// 通过串口发送数据包给下位机
+        void send_packet(const geometry_msgs::msg::Twist::SharedPtr msg);// 通过串口发送数据包给下位机
 
         //void receivePacket(const boost::system::error_code &ec, std::size_t bytes_transferred);// 通过串口接收数据包
 
         //void publishData(const ReceivePacket &packet);
 
-        void openPort();
+        void open_port();
 
-        void closePort();
+        void close_port();
 
-        void reopenPort();
+        void reopen_port();
     };
 }// namespace serial_driver
 

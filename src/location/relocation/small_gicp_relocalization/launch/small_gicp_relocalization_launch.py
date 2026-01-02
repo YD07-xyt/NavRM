@@ -41,9 +41,9 @@ def generate_launch_description():
                 "map_frame": "map",
                 "odom_frame": "odom",
                 "base_frame": "base_link",
-                "lidar_frame": "base_link",
-                "prior_pcd_file": "src/bringup/pcd/ma.pcd",
-                "input_cloud_topic": "cloud_registered",
+                "lidar_frame": "livox_frame",
+                "prior_pcd_file": "src/location/odometer/small_point_lio/pcd/scan.pcd",
+                "input_cloud_topic": "/cloud_registered",
             }
         ],
     )
