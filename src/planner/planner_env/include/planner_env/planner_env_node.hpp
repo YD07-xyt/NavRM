@@ -2,28 +2,34 @@
 
 #ifndef PLANNERENVNODE_HPP
 #define PLANNERENVNODE_HPP
+
+#include "planner_env/global_env.hpp"
+#include "planner_env/local_env.hpp"
+#include "planner_env/config.hpp"
+
+// ros
 #include <rclcpp/rclcpp.hpp>
+#include "sensor_msgs/msg/point_cloud2.hpp"
+
+// grid_map
+#include <grid_map_msgs/msg/grid_map.hpp>
+
 namespace planner {
-    struct PlannerEnvConfig{
-        std::string map_frame;           //地图坐标系
-        double resolution;               //栅格分辨率（米/格
-        double map_size_x;               //地图X方向尺寸（米)
-        double map_size_y;               //地图y方向尺寸（米)
-        double obstacle_height_threshold;//障碍物高度阈值
-        double ground_height_threshold;//地面高度阈值（用于区分地面/噪声）
-        double voxel_leaf_size; //体素滤波分辨率（降采样）
-        double max_point_height;//最大有效高度（过滤异常点)
-    };
     class PlannerEnvNode : public rclcpp::Node
     {
     public:
         explicit PlannerEnvNode(const rclcpp::NodeOptions& options);
+    
     private:
         void init_params();
     private:
-        PlannerEnvConfig global_map_config;
-        PlannerEnvConfig local_map_config;
-    
+        GlobalEnvConfig global_map_config;
+        LocalEnvConfig local_map_config;
+        GlobalEnv global_env_;
+        LocalEnv local_env_;
+        rclcpp::Subscription<grid_map_msgs::msg::GridMap> global_map_sub_;
+        rclcpp::Subscription<grid_map_msgs::msg::GridMap> local_map_sub_;
+        rclcpp::Subscription<sensor_msgs::msg::PointCloud2> point_downsampled_;
     };
 
 

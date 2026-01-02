@@ -153,7 +153,7 @@ find_package(Boost REQUIRED COMPONENTS date_time)
 ```bash
 target_include_directories( Example
   PUBLIC
-  ${Boost_LIBRARIES}
+  ${Boost_INCLUDE_DIRS}
   #其他
 )
 ```
