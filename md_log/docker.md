@@ -21,6 +21,7 @@ docker pull docker.1ms.run/nginx:latest
 ```bash
 sudo vim /etc/docker/daemon.json
 ```
+
 example:
 ```bash
 {
@@ -86,13 +87,67 @@ docker build -t nav-rm-ros2 .
 
 ## Run 容器
 ```bash
-sudo docker run -it --name navrm-dev   
+sudo docker run -it --name navrm-dev 
+            --env DISPLAY=$DISPLAY \
+            --net=host \
+            --privileged \
+            --volume /tmp/.X11-unix:/tmp/.X11-unix \
+            -v /home/ma/Nav/NavRM:/home/ma/NavRM \  
             -v 项目绝对路径:docker容器中的项目绝对路径
             nav-rm-ros2 /bin/bash
 ```
 
 ```bash
-sudo docker run -it --name navrm-dev   
-            -v /home/ma/Nav/NavRM:/root/NavRM   
-            nav-rm-ros2 /bin/bash
+sudo docker run -it --name navrm-dev \
+--env DISPLAY=$DISPLAY \
+--net=host \
+--privileged \
+--volume /tmp/.X11-unix:/tmp/.X11-unix \
+-v /home/ma/Nav/NavRM:/home/ma/NavRM \
+nav-rm-ros2 /bin/bash
 ```
+
+## 基本操作
+删除容器：
+```bash
+sudo docker stop navrm-dev
+sudo docker rm navrm-dev
+```
+
+启动容器：
+```bash
+sudo docker exec -it navrm-dev /bin/bash
+```
+
+
+
+### rviz2无法显示
+主机：
+```bash
+echo $DISPLAY
+```
+输出：例如： 
+```bash
+：0
+```
+主机上在输入
+```bash
+xhost +
+```
+
+docker容器中：
+```bash
+export DISPLAY=:0
+```
+
+***其中的:0 为主机上的输出***
+
+### docker中无法运行 mid360_driver
+
+在 Docker 中运行时：
+
+#### 网络模式问题：默认的 Bridge 模式经常会导致 UDP 绑定失败。
+解决方法：启动 Docker 容器时，请务必添加 --net=host 参数。这让容器直接使用宿主机的网络栈，雷达驱动才能正确绑定端口。
+
+#### 权限限制：雷达驱动需要底层网络访问权限。
+解决方法：启动容器时添加 --privileged 参数。
