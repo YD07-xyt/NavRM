@@ -2,9 +2,9 @@
 
 #ifndef GLOBAL_ENV_HPP
 #define GLOBAL_ENV_HPP
-#include "planner_env/config.hpp"
+#include "planning_env/config.hpp"
 #include <grid_map_core/GridMap.hpp>
-#include"planner_env/core/io.hpp"
+#include"planning_env/core/io.hpp"
 //pcl
 
 namespace planner {

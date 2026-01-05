@@ -1,4 +1,4 @@
-#include "planner_env/global_env.hpp"
+#include "planning_env/global_env.hpp"
 
 namespace planner {
     GlobalEnv::GlobalEnv(GlobalEnvConfig global_env_config)

@@ -1,8 +1,8 @@
-#include "planner_env/core/io.hpp"
+#include "planning_env/core/io.hpp"
 
 
 namespace planner {
-    void read_pcd( pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,std::string pcd_file_path)
+    inline void read_pcd( pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,std::string pcd_file_path)
     {
         if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcd_file_path, *cloud) ==
             -1) {

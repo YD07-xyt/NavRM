@@ -3,9 +3,9 @@
 #ifndef PLANNERENVNODE_HPP
 #define PLANNERENVNODE_HPP
 
-#include "planner_env/global_env.hpp"
-#include "planner_env/local_env.hpp"
-#include "planner_env/config.hpp"
+#include "planning_env/global_env.hpp"
+#include "planning_env/local_env.hpp"
+#include "planning_env/config.hpp"
 
 // ros
 #include <rclcpp/rclcpp.hpp>

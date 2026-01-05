@@ -19,6 +19,11 @@ cmake .. -DCMAKE_BUILD_TYPE=Release && make -j
 sudo make install
 ```
 
+使用日志库
+```bash
+sudo apt-get install libspdlog-dev
+```
+
 ## rosdepc (rosdep的国内版本)
 ### 下载 rosdepc
 ```bash
