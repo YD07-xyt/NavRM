@@ -8,7 +8,7 @@ namespace planner {
         read_pcd(pcd_cloud, global_env_config.pcd_file_path);
 
     }
-    void GlobalEnv::init_grid_map(pcl::PointCloud<pcl::PointXYZ>::Ptr pcd_cloud,grid_map::GridMap grid_map){
+    // void GlobalEnv::init_grid_map(pcl::PointCloud<pcl::PointXYZ>::Ptr pcd_cloud,grid_map::GridMap grid_map){
 
-    }
+    // }
 }// namespace planner

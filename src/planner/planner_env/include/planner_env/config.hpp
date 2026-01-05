@@ -23,6 +23,8 @@ struct LocalEnvConfig{
         double voxel_leaf_size; //体素滤波分辨率（降采样）
         double max_point_height;//最大有效高度（过滤异常点)
     };
+
+    
 struct GlobalEnvConfig{
         std::string pcd_file_path;       //pcd文件路径
         GridMapConfig grid_map_config;

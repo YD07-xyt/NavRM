@@ -172,9 +172,9 @@ public:
     inline double getMaxVelRate() const
     {
         VelCoefficientMat nVelCoeffMat = normalizeVelCoeffMat();
-        Eigen::VectorXd coeff = RootFinder::polySqr(nVelCoeffMat.row(0)) +
-                                RootFinder::polySqr(nVelCoeffMat.row(1)) +
-                                RootFinder::polySqr(nVelCoeffMat.row(2));
+        Eigen::VectorXd coeff = RootFinder::poly_sqr(nVelCoeffMat.row(0)) +
+                                RootFinder::poly_sqr(nVelCoeffMat.row(1)) +
+                                RootFinder::poly_sqr(nVelCoeffMat.row(2));
         int N = coeff.size();
         int n = N - 1;
         for (int i = 0; i < N; i++) {
@@ -187,16 +187,16 @@ public:
         else {
             double l = -0.0625;
             double r = 1.0625;
-            while (
-                fabs(RootFinder::polyVal(coeff.head(N - 1), l)) < DBL_EPSILON) {
+            while (fabs(RootFinder::poly_val(coeff.head(N - 1), l)) <
+                   DBL_EPSILON) {
                 l = 0.5 * l;
             }
-            while (
-                fabs(RootFinder::polyVal(coeff.head(N - 1), r)) < DBL_EPSILON) {
+            while (fabs(RootFinder::poly_val(coeff.head(N - 1), r)) <
+                   DBL_EPSILON) {
                 r = 0.5 * (r + 1.0);
             }
             std::set<double> candidates =
-                RootFinder::solvePolynomial(coeff.head(N - 1),
+                RootFinder::solve_polynomial(coeff.head(N - 1),
                     l,
                     r,
                     FLT_EPSILON / duration);
@@ -204,11 +204,9 @@ public:
             candidates.insert(1.0);
             double maxVelRateSqr = -INFINITY;
             double tempNormSqr;
-            for (std::set<double>::const_iterator it = candidates.begin();
-                 it != candidates.end();
-                 it++) {
-                if (0.0 <= *it && 1.0 >= *it) {
-                    tempNormSqr = getVel((*it) * duration).squaredNorm();
+            for (double candidate: candidates) {
+                if (0.0 <= candidate && 1.0 >= candidate) {
+                    tempNormSqr = getVel((candidate) *duration).squaredNorm();
                     maxVelRateSqr = maxVelRateSqr < tempNormSqr ? tempNormSqr
                                                                 : maxVelRateSqr;
                 }
@@ -220,9 +218,9 @@ public:
     inline double getMaxAccRate() const
     {
         AccCoefficientMat nAccCoeffMat = normalizeAccCoeffMat();
-        Eigen::VectorXd coeff = RootFinder::polySqr(nAccCoeffMat.row(0)) +
-                                RootFinder::polySqr(nAccCoeffMat.row(1)) +
-                                RootFinder::polySqr(nAccCoeffMat.row(2));
+        Eigen::VectorXd coeff = RootFinder::poly_sqr(nAccCoeffMat.row(0)) +
+                                RootFinder::poly_sqr(nAccCoeffMat.row(1)) +
+                                RootFinder::poly_sqr(nAccCoeffMat.row(2));
         int N = coeff.size();
         int n = N - 1;
         for (int i = 0; i < N; i++) {
@@ -235,16 +233,16 @@ public:
         else {
             double l = -0.0625;
             double r = 1.0625;
-            while (
-                fabs(RootFinder::polyVal(coeff.head(N - 1), l)) < DBL_EPSILON) {
+            while (fabs(RootFinder::poly_val(coeff.head(N - 1), l)) <
+                   DBL_EPSILON) {
                 l = 0.5 * l;
             }
-            while (
-                fabs(RootFinder::polyVal(coeff.head(N - 1), r)) < DBL_EPSILON) {
+            while (fabs(RootFinder::poly_val(coeff.head(N - 1), r)) <
+                   DBL_EPSILON) {
                 r = 0.5 * (r + 1.0);
             }
             std::set<double> candidates =
-                RootFinder::solvePolynomial(coeff.head(N - 1),
+                RootFinder::solve_polynomial(coeff.head(N - 1),
                     l,
                     r,
                     FLT_EPSILON / duration);
@@ -252,11 +250,9 @@ public:
             candidates.insert(1.0);
             double maxAccRateSqr = -INFINITY;
             double tempNormSqr;
-            for (std::set<double>::const_iterator it = candidates.begin();
-                 it != candidates.end();
-                 it++) {
-                if (0.0 <= *it && 1.0 >= *it) {
-                    tempNormSqr = getAcc((*it) * duration).squaredNorm();
+            for (double candidate: candidates) {
+                if (0.0 <= candidate && 1.0 >= candidate) {
+                    tempNormSqr = getAcc((candidate) *duration).squaredNorm();
                     maxAccRateSqr = maxAccRateSqr < tempNormSqr ? tempNormSqr
                                                                 : maxAccRateSqr;
                 }
@@ -274,12 +270,12 @@ public:
         }
         else {
             VelCoefficientMat nVelCoeffMat = normalizeVelCoeffMat();
-            Eigen::VectorXd coeff = RootFinder::polySqr(nVelCoeffMat.row(0)) +
-                                    RootFinder::polySqr(nVelCoeffMat.row(1)) +
-                                    RootFinder::polySqr(nVelCoeffMat.row(2));
+            Eigen::VectorXd coeff = RootFinder::poly_sqr(nVelCoeffMat.row(0)) +
+                                    RootFinder::poly_sqr(nVelCoeffMat.row(1)) +
+                                    RootFinder::poly_sqr(nVelCoeffMat.row(2));
             double t2 = duration * duration;
             coeff.tail<1>()(0) -= sqrMaxVelRate * t2;
-            return RootFinder::countRoots(coeff, 0.0, 1.0) == 0;
+            return RootFinder::count_roots(coeff, 0.0, 1.0) == 0;
         }
     }
 
@@ -292,13 +288,13 @@ public:
         }
         else {
             AccCoefficientMat nAccCoeffMat = normalizeAccCoeffMat();
-            Eigen::VectorXd coeff = RootFinder::polySqr(nAccCoeffMat.row(0)) +
-                                    RootFinder::polySqr(nAccCoeffMat.row(1)) +
-                                    RootFinder::polySqr(nAccCoeffMat.row(2));
+            Eigen::VectorXd coeff = RootFinder::poly_sqr(nAccCoeffMat.row(0)) +
+                                    RootFinder::poly_sqr(nAccCoeffMat.row(1)) +
+                                    RootFinder::poly_sqr(nAccCoeffMat.row(2));
             double t2 = duration * duration;
             double t4 = t2 * t2;
             coeff.tail<1>()(0) -= sqrMaxAccRate * t4;
-            return RootFinder::countRoots(coeff, 0.0, 1.0) == 0;
+            return RootFinder::count_roots(coeff, 0.0, 1.0) == 0;
         }
     }
 };
@@ -369,7 +365,7 @@ public:
         return pieces[i];
     }
 
-    inline void clear(void)
+    inline void clear()
     {
         pieces.clear();
         return;
