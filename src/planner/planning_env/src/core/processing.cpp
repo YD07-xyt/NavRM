@@ -7,12 +7,10 @@
 namespace planner {
 
 
-    inline pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_filters(
-        pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,
+    inline void point_cloud_filters(
+        pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud,
         float voxel_leaf_size)
     {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud(
-            new pcl::PointCloud<pcl::PointXYZ>);
         pcl::VoxelGrid<pcl::PointXYZ> sor;
 
         sor.setInputCloud(input_cloud);
@@ -20,7 +18,6 @@ namespace planner {
         sor.setLeafSize(voxel_leaf_size, voxel_leaf_size, voxel_leaf_size);
 
         sor.filter(*output_cloud);
-        return output_cloud;
     }
 
 

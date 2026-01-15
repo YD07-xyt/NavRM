@@ -21,15 +21,17 @@ namespace planner {
         explicit PlannerEnvNode(const rclcpp::NodeOptions& options);
     
     private:
-        void init_params();
+        void init_global_map_params();
+        void init_local_map_params();
+        void pcl_cloud_callback(sensor_msgs::msg::PointCloud2);
     private:
         GlobalEnvConfig global_map_config;
         LocalEnvConfig local_map_config;
         GlobalEnv global_env_;
         LocalEnv local_env_;
-        rclcpp::Subscription<grid_map_msgs::msg::GridMap> global_map_sub_;
-        rclcpp::Subscription<grid_map_msgs::msg::GridMap> local_map_sub_;
-        rclcpp::Subscription<sensor_msgs::msg::PointCloud2> point_downsampled_;
+        rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr global_map_sub_;
+        rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr local_map_sub_;
+        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr point_downsampled_;
     };
 
 

@@ -16,8 +16,8 @@ namespace planner {
     * @params: 输入点云 ，体素滤波分辨率
     * @return: 下采样的输出点云
     */
-    inline pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_filters(
-        pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,
+    inline void point_cloud_filters(
+        pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud,
         float voxel_leaf_size);
 
     /*

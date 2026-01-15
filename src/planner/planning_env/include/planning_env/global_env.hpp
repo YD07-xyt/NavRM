@@ -11,14 +11,11 @@ namespace planner {
     class GlobalEnv
     {
     public:
-        explicit GlobalEnv(GlobalEnvConfig global_env_config);
-        void get_esdf_value();
-        
+        grid_map::GridMap get_global_map();
+        void init_config(GlobalEnvConfig& global_env_config);
     private:
         grid_map::GridMap global_map;
         GlobalEnvConfig global_env_config;
-        
-        //void
     };
 }// namespace planner
 #endif

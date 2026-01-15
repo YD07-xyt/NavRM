@@ -2,11 +2,6 @@
 // Created by tommy on 12/17/18.
 //
 
-//=============================================================//
-//===================FIESTA====================================//
-//=============================================================//
-
-
 #ifndef ESDF_MAP_H
 #define ESDF_MAP_H
 
@@ -19,7 +14,8 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <algorithm>
 #include <sensor_msgs/PointCloud.h>
-//#include "parameters.h"
+
+#include "planning_env/esdf/parameters.hpp"
 
 namespace fiesta {
 #ifdef HASH_TABLE
@@ -121,9 +117,9 @@ class ESDFMap {
   ESDFMap(Eigen::Vector3d origin, double resolution, Eigen::Vector3d map_size);
 #endif
 
-  //TODO: implement this
-  ~ESDFMap() = default; 
-  
+  ~ESDFMap() {
+    //TODO: implement this
+  }
 
 #ifdef PROBABILISTIC
   void SetParameters(double p_hit, double p_miss, double p_min, double p_max, double p_occ);
@@ -146,8 +142,8 @@ class ESDFMap {
   double GetDistWithGradTrilinear(Eigen::Vector3d pos, Eigen::Vector3d &grad);
 
 // Visualization
-  void GetPointCloud(sensor_msgs::PointCloud &m, int vis_lower_bound, int vis_upper_bound);
-//   void GetSliceMarker(visualization_msgs::Marker &m, int slice, int id, Eigen::Vector4d color, double max_dist);
+  //void GetPointCloud(sensor_msgs::PointCloud &m, int vis_lower_bound, int vis_upper_bound);
+  //void GetSliceMarker(visualization_msgs::Marker &m, int slice, int id, Eigen::Vector4d color, double max_dist);
 
 // Local Range
   void SetUpdateRange(Eigen::Vector3d min_pos, Eigen::Vector3d max_pos, bool new_vec = true);

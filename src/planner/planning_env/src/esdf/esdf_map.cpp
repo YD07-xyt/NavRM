@@ -2,7 +2,7 @@
 // Created by tommy on 12/17/18.
 //
 
-#include"planning_env/esdf/esdf_map.hpp"
+#include "planning_env/esdf/esdf_map.hpp"
 #include <math.h>
 #include <time.h>
 
@@ -541,100 +541,100 @@ double fiesta::ESDFMap::GetDistWithGradTrilinear(Eigen::Vector3d pos,
 
 // region VISUALIZATION
 
-void fiesta::ESDFMap::GetPointCloud(sensor_msgs::PointCloud &m, int vis_lower_bound, int vis_upper_bound) {
-  m.header.frame_id = "world";
-  m.points.clear();
-#ifdef HASH_TABLE
-  for (int i = 1; i < count; i++) {
-    if (!Exist(Vox2Idx(vox_buffer_[i])) || vox_buffer_[i].z() < vis_lower_bound || vox_buffer_[i].z() > vis_upper_bound
-        || vox_buffer_[i].x() < min_vec_(0) || vox_buffer_[i].x() > max_vec_(0)
-        || vox_buffer_[i].y() < min_vec_(1) || vox_buffer_[i].y() > max_vec_(1))
-      continue;
+// void fiesta::ESDFMap::GetPointCloud(sensor_msgs::PointCloud &m, int vis_lower_bound, int vis_upper_bound) {
+//   m.header.frame_id = "world";
+//   m.points.clear();
+// #ifdef HASH_TABLE
+//   for (int i = 1; i < count; i++) {
+//     if (!Exist(Vox2Idx(vox_buffer_[i])) || vox_buffer_[i].z() < vis_lower_bound || vox_buffer_[i].z() > vis_upper_bound
+//         || vox_buffer_[i].x() < min_vec_(0) || vox_buffer_[i].x() > max_vec_(0)
+//         || vox_buffer_[i].y() < min_vec_(1) || vox_buffer_[i].y() > max_vec_(1))
+//       continue;
 
-    Eigen::Vector3d pos;
-    Vox2Pos(Eigen::Vector3i(vox_buffer_[i]), pos);
+//     Eigen::Vector3d pos;
+//     Vox2Pos(Eigen::Vector3i(vox_buffer_[i]), pos);
 
-    geometry_msgs::Point32 p;
-    p.x = pos(0);
-    p.y = pos(1);
-    p.z = pos(2);
-    m.points.push_back(p);
-    //        cnt++;
-  }
-#else
-  for (int x = min_vec_(0); x <= max_vec_(0); ++x)
-    for (int y = min_vec_(1); y <= max_vec_(1); ++y)
-      for (int z = min_vec_(2); z <= max_vec_(2); ++z) {
-        if (!Exist(Vox2Idx(Eigen::Vector3i(x, y, z))) || z < vis_lower_bound || z > vis_upper_bound)
-          continue;
+//     geometry_msgs::Point32 p;
+//     p.x = pos(0);
+//     p.y = pos(1);
+//     p.z = pos(2);
+//     m.points.push_back(p);
+//     //        cnt++;
+//   }
+// #else
+//   for (int x = min_vec_(0); x <= max_vec_(0); ++x)
+//     for (int y = min_vec_(1); y <= max_vec_(1); ++y)
+//       for (int z = min_vec_(2); z <= max_vec_(2); ++z) {
+//         if (!Exist(Vox2Idx(Eigen::Vector3i(x, y, z))) || z < vis_lower_bound || z > vis_upper_bound)
+//           continue;
 
-        Eigen::Vector3d pos;
-        Vox2Pos(Eigen::Vector3i(x, y, z), pos);
+//         Eigen::Vector3d pos;
+//         Vox2Pos(Eigen::Vector3i(x, y, z), pos);
 
-        geometry_msgs::Point32 p;
-        p.x = pos(0);
-        p.y = pos(1);
-        p.z = pos(2);
-        m.points.push_back(p);
-      }
-//    cout << m.points.size() << endl;
-#endif
-}
+//         geometry_msgs::Point32 p;
+//         p.x = pos(0);
+//         p.y = pos(1);
+//         p.z = pos(2);
+//         m.points.push_back(p);
+//       }
+// //    cout << m.points.size() << endl;
+// #endif
+// }
 
-inline std_msgs::ColorRGBA RainbowColorMap(double h) {
-  std_msgs::ColorRGBA color;
-  color.a = 1;
-  // blend over HSV-values (more colors)
+// inline std_msgs::ColorRGBA RainbowColorMap(double h) {
+//   std_msgs::ColorRGBA color;
+//   color.a = 1;
+//   // blend over HSV-values (more colors)
 
-  double s = 1.0;
-  double v = 1.0;
+//   double s = 1.0;
+//   double v = 1.0;
 
-  h -= floor(h);
-  h *= 6;
-  int i;
-  double m, n, f;
+//   h -= floor(h);
+//   h *= 6;
+//   int i;
+//   double m, n, f;
 
-  i = floor(h);
-  f = h - i;
-  if (!(i & 1))
-    f = 1 - f;  // if i is even
-  m = v * (1 - s);
-  n = v * (1 - s * f);
+//   i = floor(h);
+//   f = h - i;
+//   if (!(i & 1))
+//     f = 1 - f;  // if i is even
+//   m = v * (1 - s);
+//   n = v * (1 - s * f);
 
-  switch (i) {
-    case 6:
-    case 0:color.r = v;
-      color.g = n;
-      color.b = m;
-      break;
-    case 1:color.r = n;
-      color.g = v;
-      color.b = m;
-      break;
-    case 2:color.r = m;
-      color.g = v;
-      color.b = n;
-      break;
-    case 3:color.r = m;
-      color.g = n;
-      color.b = v;
-      break;
-    case 4:color.r = n;
-      color.g = m;
-      color.b = v;
-      break;
-    case 5:color.r = v;
-      color.g = m;
-      color.b = n;
-      break;
-    default:color.r = 1;
-      color.g = 0.5;
-      color.b = 0.5;
-      break;
-  }
+//   switch (i) {
+//     case 6:
+//     case 0:color.r = v;
+//       color.g = n;
+//       color.b = m;
+//       break;
+//     case 1:color.r = n;
+//       color.g = v;
+//       color.b = m;
+//       break;
+//     case 2:color.r = m;
+//       color.g = v;
+//       color.b = n;
+//       break;
+//     case 3:color.r = m;
+//       color.g = n;
+//       color.b = v;
+//       break;
+//     case 4:color.r = n;
+//       color.g = m;
+//       color.b = v;
+//       break;
+//     case 5:color.r = v;
+//       color.g = m;
+//       color.b = n;
+//       break;
+//     default:color.r = 1;
+//       color.g = 0.5;
+//       color.b = 0.5;
+//       break;
+//   }
 
-  return color;
-}
+//   return color;
+// }
 
 // void fiesta::ESDFMap::GetSliceMarker(visualization_msgs::Marker &m, int slice, int id,
 //                                      Eigen::Vector4d color, double max_dist) {
