@@ -219,6 +219,7 @@ namespace planner {
 
         spdlog::info("ESDF layer updated.");
     }
+    
     inline void FiestaESDFMap_to_GridMap(fiesta::ESDFMap& fiesta_esdf_map,
         grid_map::GridMap& grid_map,
         const std::string& layer_name)

@@ -38,7 +38,7 @@ namespace planner {
         grid_map::GridMap& grid_map);
 
     /*
-    * @brief:  map 增加 esdf层
+    * @brief:  使用 FIESTA 增量更新 esdf层 
     * @params: 输入的下采样点云 , map 
     * @return: 输出map
     */
@@ -77,7 +77,9 @@ namespace planner {
 
 
     //======================================================//
-    // tool
+    //======================= tool =========================//
+    //======================================================//
+
     //TODO:
     /*
     * @brief: grid_map 的输入层  膨胀 
@@ -88,7 +90,7 @@ namespace planner {
         double inflation_radius);
 
     /* 
-    *  @brief:x*x 
+    *  @return: x*x 
     */
     inline double squared(double x);
 
@@ -100,8 +102,8 @@ namespace planner {
         const std::string& outputLayer);
 
     /*
-        * @brief: fiesta_esdf_map to GridMap esdf layer
-        */
+    * @brief: fiesta_esdf_map to GridMap esdf layer 
+    */
     inline void FiestaESDFMap_to_GridMap(fiesta::ESDFMap& fiesta_esdf_map,
         grid_map::GridMap& grid_map,
         const std::string& layer_name);

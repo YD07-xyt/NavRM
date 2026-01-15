@@ -7,8 +7,6 @@ namespace planner {
 
     struct GridMapConfig {
         std::string map_frame;//地图坐标系
-        // int layer;                         // 层数
-        // std::vector<std::string> layer_names; // 层的名字
         double map_postion_x;            // 原点x
         double map_postion_y;            // 原点y
         double map_postion_z;            // 原点z
@@ -32,6 +30,8 @@ namespace planner {
         GridMapConfig grid_map_config;
         double voxel_leaf_size; //体素滤波分辨率（降采样）
         double max_point_height;//最大有效高度（过滤异常点)
+        double min_obstacle_height;
+        double max_obstacle_height;
     };
 
 }// namespace planner

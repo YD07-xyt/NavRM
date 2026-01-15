@@ -121,9 +121,9 @@ class ESDFMap {
   ESDFMap(Eigen::Vector3d origin, double resolution, Eigen::Vector3d map_size);
 #endif
 
-  ~ESDFMap() {
-    //TODO: implement this
-  }
+  //TODO: implement this
+  ~ESDFMap() = default; 
+  
 
 #ifdef PROBABILISTIC
   void SetParameters(double p_hit, double p_miss, double p_min, double p_max, double p_occ);
