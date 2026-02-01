@@ -1,0 +1,87 @@
+[2026-01-28 03:17:15.128] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 03:17:15.314] [info] [processing.cpp:46] 初始化2.5d map
+[2026-01-28 03:17:15.349] [info] [processing.cpp:87] 高程层初始化完成: 有效点=52619, 外部点=842968, NaN点=0
+[2026-01-28 03:22:29.161] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 03:22:29.340] [info] [processing.cpp:46] 初始化2.5d map
+[2026-01-28 03:22:29.374] [info] [processing.cpp:88] 高程层初始化完成: 有效点=52619, 外部点=842968, NaN点=0
+[2026-01-28 03:24:54.440] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 03:24:54.633] [info] [processing.cpp:46] 初始化2.5d map
+[2026-01-28 03:24:54.667] [info] [processing.cpp:88] 高程层初始化完成: 有效点=52619, 外部点=842968, NaN点=0
+[2026-01-28 03:53:17.520] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 03:53:17.705] [info] [processing.cpp:46] 初始化2.5d map
+[2026-01-28 03:53:17.739] [info] [processing.cpp:88] 高程层初始化完成: 有效点=52619, 外部点=842968, NaN点=0
+[2026-01-28 03:53:25.921] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 03:53:26.109] [info] [processing.cpp:46] 初始化2.5d map
+[2026-01-28 03:53:26.143] [info] [processing.cpp:88] 高程层初始化完成: 有效点=52619, 外部点=842968, NaN点=0
+[2026-01-28 04:00:43.430] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 04:00:43.612] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:00:43.650] [info] [processing.cpp:102] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:04:11.137] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 04:04:11.322] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:04:11.361] [info] [processing.cpp:103] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:05:31.377] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 04:05:31.562] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:05:31.599] [info] [processing.cpp:103] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:07:17.499] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 04:07:17.685] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:07:17.726] [info] [processing.cpp:103] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:09:11.538] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 04:09:11.721] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:09:11.761] [info] [processing.cpp:103] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:10:44.506] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 04:10:44.707] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:10:44.745] [info] [processing.cpp:103] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:14:58.793] [info] [io.hpp:22] Success read file your_file.pcd
+
+[2026-01-28 04:14:58.990] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:14:59.029] [info] [processing.cpp:103] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:16:33.197] [info] [io.hpp:22] Success read file your_file.pcd
+[2026-01-28 04:16:33.404] [info] [processing.cpp:46] 初始化2.5d map:
+[2026-01-28 04:16:33.441] [info] [processing.cpp:103] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 04:18:35.667] [info] [io.hpp:22] Success read file your_file.pcd
+[2026-01-28 04:18:35.866] [info] [processing.cpp:45] 初始化2.5d map:
+[2026-01-28 04:18:35.904] [info] [processing.cpp:87] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 23:07:14.962] [info] [:] Success read file your_file.pcd
+[2026-01-28 23:07:15.142] [info] [:] 初始化2.5d map:
+[2026-01-28 23:07:15.178] [info] [:] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 23:23:09.637] [info] [:] Success read file your_file.pcd
+[2026-01-28 23:23:09.819] [info] [:] 初始化2.5d map:
+[2026-01-28 23:23:09.854] [info] [:] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 23:27:09.815] [info] [:] Success read file your_file.pcd
+[2026-01-28 23:27:10.022] [info] [:] 初始化2.5d map:
+[2026-01-28 23:27:10.061] [info] [:] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-28 23:28:36.656] [info] [:] Success read file your_file.pcd
+[2026-01-28 23:28:36.845] [info] [:] 初始化2.5d map:
+[2026-01-28 23:28:36.883] [info] [:] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-29 01:49:49.984] [info] [io.hpp:23] Success read file your_file.pcd
+[2026-01-29 01:49:50.167] [info] [grid_map.cpp:23] 初始化2.5d map:
+[2026-01-29 01:49:50.203] [info] [grid_map.cpp:66] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-29 01:49:57.118] [info] [io.hpp:23] Success read file your_file.pcd
+[2026-01-29 01:49:57.298] [info] [grid_map.cpp:23] 初始化2.5d map:
+[2026-01-29 01:49:57.334] [info] [grid_map.cpp:66] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-29 01:56:35.865] [info] [io.hpp:23] Success read file your_file.pcd
+[2026-01-29 01:56:36.046] [info] [grid_map.cpp:23] 初始化2.5d map:
+[2026-01-29 01:56:36.083] [info] [grid_map.cpp:66] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-29 01:58:04.893] [info] [planner_env_node.cpp:7] ddddddddddddddd
+[2026-01-29 01:58:05.071] [info] [io.hpp:23] Success read file your_file.pcd
+[2026-01-29 01:58:05.286] [info] [grid_map.cpp:23] 初始化2.5d map:
+[2026-01-29 01:58:05.325] [info] [grid_map.cpp:66] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-29 02:00:32.510] [info] [planner_env_node.cpp:7] ddddddddddddddd
+[2026-01-29 02:00:32.692] [info] [io.hpp:22] Success read file your_file.pcd
+[2026-01-29 02:00:32.873] [info] [grid_map.cpp:23] 初始化2.5d map:
+[2026-01-29 02:00:32.909] [info] [grid_map.cpp:66] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0
+[2026-01-29 02:02:01.220] [info] [planner_env_node.cpp:7] ddddddddddddddd
+[2026-01-29 02:02:01.394] [info] [io.hpp:22] Success read file your_file.pcd
+[2026-01-29 02:02:01.573] [info] [grid_map.cpp:23] 初始化2.5d map:
+[2026-01-29 02:02:01.609] [info] [grid_map.cpp:66] 高程层初始化完成: 有效点=71859, 外部点=823728, NaN点=0

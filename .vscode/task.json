@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "编译C++文件",  
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Debug",
+            "group": {"kind": "build", "isDefault": true},
+            "problemMatcher": "$gcc",
+            "detail": "ROS2 Debug"
+        }
+    ]
+}

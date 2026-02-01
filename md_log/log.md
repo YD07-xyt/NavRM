@@ -1,7 +1,73 @@
-# map log problem
+# log problem
 
 
 ## 
+1. 完善planning_env 发布global_env
+   ***现在数据全为空， 考虑是read的点云的尺寸与地图参数不符，考虑自适应参数***
+
+
+2. 封装spdlog-> rm_log
+主要处理日志打印报错文件路径 行数
+
+作为一个独立库所用
+
+```zsh
+target_include_directories(rm_log PUBLIC include)
+```
+所有链接的文件可以直接看见log 头文件
+
+```zsh
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+```
+将 CMAKE_POSITION_INDEPENDENT_CODE 设置为 ON，
+等同于给所有的编译目标（Target）都加上了 -fPIC 编译选项
+
+静态库 (.a) 默认是一组包含绝对地址引用的机器码。
+动态库 (.so) 要求代码必须是“位置无关”的，因为它被加载到内存时的起始地址是不确定的。
+
+如果你试图把一个没有 -fPIC 的静态库塞进动态库，链接器会发现它无法在运行时重定位这些地址，从而报错。
+开启该选项后，CMake 会确保所有生成的 .o 文件都符合动态库的加载要求。
+
+链接
+以planner_env为例子
+```zsh
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../tool/log  ${CMAKE_CURRENT_BINARY_DIR}/tool/rmlog)
+target_link_libraries(${PROJECT_NAME} rm_log)
+```
+宏无需带namespace
+
+默认传值 c++20
+聚合初始化 rmlog::rmlog_init({});
+对于一个“简单”的结构体（没有私有成员、没有显式构造函数、没有虚函数），
+你可以直接用大括号 {} 按顺序给成员赋值：
+
+
+解决 spdlog 链接冲突
+如果系统里安装的 libspdlog.a 是旧的且不带 -fPIC 链接失败
+```zsh
+target_link_libraries(rm_log PRIVATE spdlog::spdlog_header_only)
+```
+改为链接spdlog::spdlog_header_only
+
+1. cmake 链接
+
+类型扩展名  (Linux)扩展名   (Windows)       说明
+STATIC      .a              .lib        代码直接打进可执行文件，体积大但分发简单。
+SHARED      .so             .dll        运行时加载，多个程序可共享，减小磁盘占用。
+MODULE      .so             .dll        通常用于插件系统，不参与常规链接。
+
+1. rviz2 启动失败 
+    ubuntu使用Wayland而非x11时
+```bash
+export QT_QPA_PLATFORM=xcb
+```
+
+
+2. 删除子模块
+```bash
+git rm --cached <子模块的路径>
+```
+
 <<<<<<< HEAD:md_log/map.md
 3.eigen pcl 内存对齐不匹配
 ```bash
@@ -17,7 +83,7 @@ target_compile_options(${PROJECT_NAME}
 )
 ``` 
 
-2. 点云切割patchwork-plusplus 
+1. 点云切割patchwork-plusplus 
 
 1.zsh bash 与ros2的兼容性问题 
 运行 source install/setup.bash时报错：
@@ -54,7 +120,7 @@ not found: "/home/xyt/My/nav/NavRM/local_setup.bash"
 
 
 
-## 12.17
+## 2025.12.17
 
 1. 框架： livox_ros_driver2 -> small_point_lio -> terrain_analysis ->  terrain_analysis_ext ->pointcloud_to_laserscan 
 
@@ -172,10 +238,10 @@ target_include_directories( Example
 
 10.source install/setup.bash 失败
 
-原因：zsh为配置好
+原因：在zsh中运行source install/setup.zsh
      bash正常
 
-## 12.18
+## 2025.12.18
 
 1. 自瞄接口aim_driver
     (1) 自定义msg

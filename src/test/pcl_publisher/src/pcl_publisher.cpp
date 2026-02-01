@@ -4,7 +4,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 namespace test {
-    PclPublisherNode::PclPublisherNode(const rclcpp::NodeOptions& options)
+    PclPublisherNode::PclPublisherNode(const rclcpp::NodeOptions& /*options*/)
         : rclcpp::Node("pcl_publisher_node")
     {
         test_lidar_pub_ =
@@ -21,7 +21,7 @@ namespace test {
         }
         pcl::toROSMsg(*pcd_cloud, ros2_pcl_cloud);
 
-        ros2_pcl_cloud.header.frame_id = "map";
+        ros2_pcl_cloud.header.frame_id = "livox_frame";
         ros2_pcl_cloud.header.stamp = this->get_clock()->now();
         double publish_period = 0.5;
         timer_ = this->create_wall_timer(
