@@ -1,8 +1,8 @@
 #pragma once
 
 #include <queue>
-#include <set>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -31,6 +31,12 @@ namespace global_planner {
         }
     };
 
+    struct Point2dEqual {
+    bool operator()(const Point2d& a, const Point2d& b) const {
+        return a == b;
+        // return (a - b).norm() < 1e-9;
+    }
+    };
     double heuristic(Point2d node1, Point2d node2);
 
 
@@ -45,7 +51,7 @@ namespace global_planner {
     private:
         std::vector<Point2d> neighbors;
         std::priority_queue<Node, std::vector<Node>, std::greater<>> open_list;
-        std::set<Point2d> close_list;
+        std::unordered_set<Point2d,PairHash> close_list;
         std::unordered_map<Point2d, Point2d, PairHash> path;
         std::unordered_map<Point2d, double, PairHash> g_score;
         std::vector<Point2d> trace_back(Point2d current_point,

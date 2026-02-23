@@ -9,19 +9,24 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
-set(LIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../trajectory_optimization)
+set(OPT_LIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../trajectory_optimization)
+set(RC_ESDF_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../planner_map/RC-ESDF-2D)
+
+add_subdirectory(${OPT_LIB_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/trajectory_optimization_build)
+add_subdirectory(${RC_ESDF_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/rc_esdf_build)
+
+ament_auto_add_executable(${PROJECT_NAME} src/planner_node.cpp
+src/planner_manage.cpp
+src/planner_map.cpp
+)
 
 
-add_subdirectory(${LIB_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/mytrajectory_optimization_build)
-
-
-ament_auto_add_executable(${PROJECT_NAME} src/planner_node.cpp)
-
-
-target_link_libraries(${PROJECT_NAME} trajectory_optimization)
+target_link_libraries(${PROJECT_NAME} trajectory_optimization
+rc_esdf)
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
-  ${LIB_SOURCE_DIR}/include
+  ${OPT_LIB_SOURCE_DIR}/include
+  ${RC_ESDF_SOURCE_DIR}/include
 )
 
 if(BUILD_TESTING)

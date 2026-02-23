@@ -26,5 +26,6 @@
         "rosdep",
         "rosdepc",
         "rosdistro"
-    ]
+    ],
+    "claudeCode.disableLoginPrompt": true
 }

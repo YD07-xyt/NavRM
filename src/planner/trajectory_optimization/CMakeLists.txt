@@ -6,9 +6,7 @@ project(trajectory_optimization)
 find_package(Eigen3 REQUIRED)
 
 set(SOURCE 
-    src/core/root_finder.cpp
-    src/minco/minco.cpp
-    src/minco/trajectory.cpp)
+    src/traj.cpp)
 
 add_library(trajectory_optimization STATIC ${SOURCE})
 

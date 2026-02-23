@@ -25,7 +25,7 @@
 #ifndef MINCO_HPP
 #define MINCO_HPP
 
-#include "minco/trajectory.hpp"
+#include "trajectory.hpp"
 
 #include <Eigen/Eigen>
 
