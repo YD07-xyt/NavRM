@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 4.0)
 project(planning_env)
 set(CMAKE_CXX_STANDARD 23)
 
@@ -14,7 +14,7 @@ find_package(Boost REQUIRED COMPONENTS date_time)
 ament_auto_find_build_dependencies()
 
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../tool/log  ${CMAKE_CURRENT_BINARY_DIR}/tool/rmlog)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../tool/rm_log  ${CMAKE_CURRENT_BINARY_DIR}/tool/rmlog)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 

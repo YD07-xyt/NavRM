@@ -59,7 +59,7 @@ GraphSearch::GraphSearch(std::shared_ptr<planner::ESDFMap> Map, const double &sa
 
 
 inline int GraphSearch::coordToId(int x, int y) const {
-  return map_->Index2Vectornum(x,y);
+  //return map_->Index2Vectornum(x,y);
 }
 
 // inline int GraphSearch::coordToId(int x, int y, int z) const {
@@ -70,14 +70,14 @@ inline bool GraphSearch::isFree(int x, int y) const {
   if(x < 0 || x >= xDim_ || y < 0 || y >= yDim_){
     return false;
   }
-  return !map_->isOccWithSafeDis(x,y,safe_dis_);
+  //return !map_->isOccWithSafeDis(x,y,safe_dis_);
 }
 
 inline bool GraphSearch::isUnoccupied(int x, int y) const{
   if(x < 0 || x >= xDim_ || y < 0 || y >= yDim_){
     return false;
   }
-  return map_->isUnOccupied(x,y);
+  //return map_->isUnOccupied(x,y);
 }
 
 inline bool GraphSearch::isOccupied(int x, int y) const {
@@ -85,7 +85,7 @@ inline bool GraphSearch::isOccupied(int x, int y) const {
   //   cMap_[coordToId(x, y)] > val_free_;
   if(x < 0 || x >= xDim_ || y < 0 || y >= yDim_){
     return true;}
-  return map_->isOccupied(x,y);
+  //return map_->isOccupied(x,y);
 }
 
 inline double GraphSearch::getHeur(int x, int y) const {
