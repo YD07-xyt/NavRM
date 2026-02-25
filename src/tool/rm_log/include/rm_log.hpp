@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef RM_LOG_HPP
+#define RM_LOG_HPP
+
 #include <print>
 #include <source_location>
 #include <string_view>
@@ -71,3 +76,5 @@ inline void error(std::string_view message,
 }
 
 } // namespace rm_log
+
+#endif

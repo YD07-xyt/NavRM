@@ -92,7 +92,6 @@ sudo docker run -it --name navrm-dev
             --net=host \
             --privileged \
             --volume /tmp/.X11-unix:/tmp/.X11-unix \
-            -v /home/ma/Nav/NavRM:/home/ma/NavRM \  
             -v 项目绝对路径:docker容器中的项目绝对路径
             nav-rm-ros2 /bin/bash
 ```
