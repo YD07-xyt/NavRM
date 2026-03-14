@@ -1,18 +1,47 @@
 # NavRM
 
 ## 简介
-本项目使用 small_point_lio 作为里程计 进行定位，建图 ，
+本项目使用 super_lio 作为里程计 进行定位，建图 ，
      使用 small_gicp 进行全局重定位 ，
      TODO: 使用 grid_map 绘制2.5d图+esdf+ 骨干提取()
-     TODO: 路径规划 参考pc-planner 
+     TODO: 路径规划 参考DDR-opt 
+
+## TODO功能
+
+### planner 
+1.独立ros2 与 算法
+
+2.独立 replan(状态机)
+
+3.使用 grid_map 绘制2.5d图+esdf+ 骨干提取() + esdf增量更新 
+
+### odom 
+
+TODO:
+
+### io
+
+TODO: 
+
+## 项目结构
+.
+├── 📂 bringup
+├── 📂 location
+│ ├── odometry
+│ ├── preprocess
+│ └── relocation
+│
+├── 📂 planner/ # 规划器
+│ ├── 📂  path_searching
+│ ├── 📂  planner_controller
+│ ├── 📂  planner_map
+│ ├── 📂  trajectory_optimization
+│ ├── 📂  planner_ros2
+│ └── 📂  replanner_decision
+
+TODO:
 
 ## env build
-
-
-下载 rosdep
-```bash
-pip install rosdep
-```
 
 补全依赖:
 ```bash
@@ -29,12 +58,6 @@ mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release && make -j
 sudo make install
 ```
-
-下载串口库
-```bash
-sudo apt install ros-humble-serial-driver
-```
-
 
 ## docker build
 
@@ -58,25 +81,4 @@ nav-rm-ros2 /bin/bash
 
 ## 建图
 
-## 保存pcd
-
-运行./sh/map.sh
-再开一个终端运行：
-```bash
-ros2 service call /map_save std_srvs/srv/Trigger
-```
-
-
-### pcd 转 pgm
-运行 ./sh/pcd2pgm.sh
-再开一个终端运行：
-```bash
-ros2 run nav2_map_server map_saver_cli -f ma
-```
-
-
-## run nav
-
-```bash
-chmod 777 /dev/ttyUSB0
-```
+TODO:
