@@ -25,19 +25,19 @@ TODO:
 
 ## 项目结构
 .
-├── 📂 bringup
-├── 📂 location
-│ ├── odometry
-│ ├── preprocess
-│ └── relocation
+├── 📂 bringup  
+├── 📂 location  
+│ ├── odometry  
+│ ├── preprocess  
+│ └── relocation  
 │
-├── 📂 planner/ # 规划器
-│ ├── 📂  path_searching
-│ ├── 📂  planner_controller
-│ ├── 📂  planner_map
-│ ├── 📂  trajectory_optimization
-│ ├── 📂  planner_ros2
-│ └── 📂  replanner_decision
+├── 📂 planner/ # 规划器  
+│ ├── 📂  path_searching  
+│ ├── 📂  planner_controller  
+│ ├── 📂  planner_map  
+│ ├── 📂  trajectory_optimization  
+│ ├── 📂  planner_ros2  
+│ └── 📂  replanner_decision  
 
 TODO:
 
