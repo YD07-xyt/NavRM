@@ -6,7 +6,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/Eigenvalues>
 
-#include "gcopter/minco.hpp"
+#include "minco/minco.hpp"
 
 class TrajAnal{
     private:

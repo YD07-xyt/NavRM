@@ -37,11 +37,11 @@ using namespace JPS;
 //   jn3d_ = std::make_shared<JPS3DNeib>();
 // }
 
-GraphSearch::GraphSearch(std::shared_ptr<planner::ESDFMap> Map, const double &safe_dis):map_(Map), safe_dis_(safe_dis)
+GraphSearch::GraphSearch(std::shared_ptr<planner::map::Map> Map, const double &safe_dis):map_(Map), safe_dis_(safe_dis)
 {
   verbose_ = false;
-  xDim_ = map_->params.height_m;
-  yDim_ = map_->params.width_m;
+  xDim_ = map_->occupancy_grid_map.GLX_SIZE_;
+  yDim_ = map_->occupancy_grid_map.GLY_SIZE_;
   eps_ = 1;
   
   hm_.resize(xDim_ * yDim_);
@@ -59,7 +59,7 @@ GraphSearch::GraphSearch(std::shared_ptr<planner::ESDFMap> Map, const double &sa
 
 
 inline int GraphSearch::coordToId(int x, int y) const {
-  //return map_->Index2Vectornum(x,y);
+  return map_->occupancy_grid_map.Index2Vectornum(x,y);
 }
 
 // inline int GraphSearch::coordToId(int x, int y, int z) const {
@@ -70,14 +70,14 @@ inline bool GraphSearch::isFree(int x, int y) const {
   if(x < 0 || x >= xDim_ || y < 0 || y >= yDim_){
     return false;
   }
-  //return !map_->isOccWithSafeDis(x,y,safe_dis_);
+  return !map_->occupancy_grid_map.isOccWithSafeDis(x,y,safe_dis_);
 }
 
 inline bool GraphSearch::isUnoccupied(int x, int y) const{
   if(x < 0 || x >= xDim_ || y < 0 || y >= yDim_){
     return false;
   }
-  //return map_->isUnOccupied(x,y);
+  return map_->occupancy_grid_map.isUnOccupied(x,y);
 }
 
 inline bool GraphSearch::isOccupied(int x, int y) const {
@@ -85,7 +85,7 @@ inline bool GraphSearch::isOccupied(int x, int y) const {
   //   cMap_[coordToId(x, y)] > val_free_;
   if(x < 0 || x >= xDim_ || y < 0 || y >= yDim_){
     return true;}
-  //return map_->isOccupied(x,y);
+  return map_->occupancy_grid_map.isOccupied(x,y);
 }
 
 inline double GraphSearch::getHeur(int x, int y) const {

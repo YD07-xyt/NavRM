@@ -1,0 +1,18 @@
+resolution:   #分辨率
+detection_range: #传感器的最大检测距离
+global_x_lower:
+global_x_upper:
+global_y_lower:
+global_y_upper:
+if_perspective: #透视模式
+if_cirSupRaycast: 
+#FOV视场角  
+# 是否启用水平视场角限制
+hrz_limited;  # true: 启用FOV限制, false: 无限制(360°)
+# 水平激光视场角范围（单位：度）
+hrz_laser_range_dgr:
+p_hit:      #占用更新概率
+p_miss:     #空闲更新概率
+p_min:      #最小概率
+p_max:      #最大概率
+p_occ:      #占用阈值

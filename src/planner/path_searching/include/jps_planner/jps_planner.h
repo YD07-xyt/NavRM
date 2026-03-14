@@ -1,12 +1,29 @@
 #ifndef JPS_PLANNER_H
 #define JPS_PLANNER_H
 
-#include <planner_map.hpp>
-#include <jps_planner/graph_search.h>
-#include <traj_representation.h>
+#include<rclcpp/rclcpp.hpp>
+
+#include <../../planner_map/include/planner_map.hpp>
+#include <../../path_searching/include/jps_planner/graph_search.h>
+#include <../../path_searching/include/jps_planner/traj_representation.h>
+
+
 
 namespace JPS
 {
+    struct JPSPlannerParams{
+            double safe_dis_;
+            double max_jps_dis_;
+            double distance_weight_;
+            double yaw_weight_;
+            double trajCutLength_;
+            double max_vel_;
+            double max_acc_;
+            double max_omega_;
+            double max_domega_;
+            double sampletime_;
+            int mintrajNum_;
+    };
 
     class JPSPlanner
     {
@@ -33,7 +50,7 @@ namespace JPS
 
             bool if_first_point_cut_;
             
-            std::shared_ptr<planner::ESDFMap> map_util_;
+            std::shared_ptr<planner::map::Map> map_util_;
             std::shared_ptr<GraphSearch> graph_search_;
 
             int status_;
@@ -53,7 +70,7 @@ namespace JPS
 
             double jps_truncation_time_;
 
-            explicit JPSPlanner(std::shared_ptr<planner::ESDFMap> map);
+            explicit JPSPlanner(std::shared_ptr<planner::map::Map> map,JPSPlannerParams params);
             
             bool plan(const Eigen::Vector3d &start, const Eigen::Vector3d &goal);
 

@@ -9,7 +9,7 @@
 #include <boost/heap/d_ary_heap.hpp>// boost::heap::d_ary_heap
 #include <limits>                   // std::numeric_limits
 #include <memory>                   // std::shared_ptr
-#include <planner_map.hpp>
+#include <../../planner_map/include/planner_map.hpp>
 #include <unordered_map>// std::unordered_map
 #include <vector>       // std::vector
 
@@ -198,7 +198,7 @@ namespace JPS {
         //    */
         //   GraphSearch(const char* cMap, int xDim, int yDim, int zDim, double eps = 1, bool verbose = false);
 
-        GraphSearch(std::shared_ptr<planner::ESDFMap> Map, const double& safe_dis);
+        GraphSearch(std::shared_ptr<planner::map::Map> Map, const double& safe_dis);
 
         /**
        * @brief start 2D planning thread
@@ -305,7 +305,7 @@ namespace JPS {
         void init2DJps();
 
         // const char* cMap_;
-        std::shared_ptr<planner::ESDFMap> map_;
+        std::shared_ptr<planner::map::Map> map_;
         int xDim_, yDim_, zDim_;
         double eps_;
         bool verbose_;

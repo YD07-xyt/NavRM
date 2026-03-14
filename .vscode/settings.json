@@ -7,12 +7,12 @@
         "--background-index",
         "--completion-style=detailed",
         "--header-insertion=never",
-        "--query-driver=/usr/bin/c++",
+        "--query-driver=/usr/bin/g++",
         "--all-scopes-completion"
     ],
     "clangd.path": "/usr/bin/clangd",
     "clangd.fallbackFlags": [
-        "-std=c++23",
+        "-std=c++17",
         "-I${workspaceFolder}",
         "-I/opt/ros/humble/include/"
     ],

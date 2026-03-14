@@ -25,7 +25,7 @@
 #pragma once
 
 #include <Eigen/Eigen>
-#include <ros/ros.h>
+//#include <ros/ros.h>
 
 namespace Tracked_nmpc {
 
