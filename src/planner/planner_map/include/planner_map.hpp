@@ -17,6 +17,7 @@
 #include <tf2_ros/transform_listener.hpp>
 #include <tf2_ros/buffer.hpp>
 #include "tf2/utils.h"
+#include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>  
 
 
 namespace planner {
@@ -29,14 +30,17 @@ namespace planner {
             //ESDFMap esdf_map;
 
         public:
-            static std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+            static std::shared_ptr<tf2_ros::Buffer> tf_buffer_ ;
             rclcpp::Node::SharedPtr node_;
+            
             rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_gridmap_;
             rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_ESDF_;
             rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_gradESDF_;
+            
             rclcpp::TimerBase::SharedPtr occtimer_;
             rclcpp::TimerBase::SharedPtr esdftimer_;
             rclcpp::TimerBase::SharedPtr vistimer_;
+
         public:
             void Occupancycallback(){
                 occupancy_grid_map.updateOccupancycallback();
@@ -46,6 +50,10 @@ namespace planner {
             };
             void publish_gridmap();
             void publish_ESDF();
+            void publish_ESDFGrad(){
+                //TODO:
+                return ;
+            };
             void visCallback(){
                 if(occupancy_grid_map.has_map_){
                         publish_gridmap();

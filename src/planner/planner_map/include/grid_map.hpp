@@ -142,8 +142,6 @@ namespace planner {
         template <typename F_get_val, typename F_set_val>
         void fillESDF(F_get_val f_get_val, F_set_val f_set_val, int start, int end, int dim);
         //TODO:
-        void publish_ESDF();
-        //TODO:
         void publish_ESDFGrad();
         inline double getDistance(const Eigen::Vector2i& id);
         inline double getDistance(const int& idx, const int& idy);
@@ -165,7 +163,7 @@ namespace planner {
     public:
         bool has_esdf_ = false;
         bool esdf_need_update_ = false;
-    private:
+    public:
         std::vector<double> distance_buffer_all_ 
             = std::vector<double>(GLXY_SIZE_, std::numeric_limits<double>::max());
     public:

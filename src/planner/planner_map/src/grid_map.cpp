@@ -7,9 +7,6 @@
 namespace planner {
     namespace map {
     OccupancyGridMap::OccupancyGridMap(){
-        /**
-        TODO: 定时处理处理updateOccupancycallback 
-         */
         // init map
       GLX_SIZE_ = ceil((map_params.global_x_upper - map_params.global_x_lower) / map_params.resolution);
       GLY_SIZE_ = ceil((map_params.global_y_upper - map_params.global_y_lower) / map_params.resolution);

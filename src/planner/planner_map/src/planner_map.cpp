@@ -2,10 +2,12 @@
 #include <chrono>
 #include<functional>
 
+std::shared_ptr<tf2_ros::Buffer> planner::map::Map::tf_buffer_ = nullptr;
+
 namespace planner {
     namespace map {
- 
- 
+
+
     ESDFMap::ESDFMap(ESDFMapConfig params,
         std::vector<Eigen::Vector2d>& obs_points_body)
         : params(params),obs_points_body_(obs_points_body)
@@ -142,5 +144,26 @@ void Map::pointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
   occupancy_grid_map.occ_need_update_ = true;
 }
 
-    }
+void Map::publish_ESDF(){
+  pcl::PointCloud<pcl::PointXYZI> cloud_vis;
+  sensor_msgs::msg::PointCloud2 surf_vis;
+  const double min_dist = 0.0;
+  const double max_dist = 5.0;
+  int size = occupancy_grid_map.distance_buffer_all_.size();
+  for(int i = 1; i< size;i++){
+    Eigen::Vector2d coord = occupancy_grid_map.gridIndex2coordd(occupancy_grid_map.vectornum2gridIndex(i));
+    pcl::PointXYZI pt;
+    pt.x = coord.x();pt.y = coord.y();pt.z = 0.0;
+    pt.intensity = std::max(min_dist, std::min(occupancy_grid_map.distance_buffer_all_[i],max_dist));
+    cloud_vis.points.push_back(pt);
+  }
+  cloud_vis.width = cloud_vis.points.size();
+  cloud_vis.height = 1;
+  cloud_vis.is_dense = true;
+  pcl::toROSMsg(cloud_vis, surf_vis);
+  surf_vis.header.frame_id = "world";
+  pub_ESDF_->publish(surf_vis);
+}
+
+}
 } // namespace planner
