@@ -8,6 +8,10 @@
 
 ## TODO功能
 
+### planner_controller 
+
+mpc 的实现
+
 ### planner 
 1.独立ros2 与 算法
 
@@ -27,8 +31,8 @@ TODO:
 .
 ├── 📂 bringup  
 ├── 📂 location  
-│ ├── odometry  
-│ ├── preprocess  
+│ ├── odometry    
+│ ├── preprocess   
 │ └── relocation  
 │
 ├── 📂 planner/ # 规划器  
@@ -80,5 +84,3 @@ nav-rm-ros2 /bin/bash
 ```
 
 ## 建图
-
-TODO:

@@ -1,0 +1,104 @@
+# Config
+max_vel: 5.0
+min_vel: -5.0
+max_acc: 5.0
+max_omega: 1.0
+max_domega: 50.0
+max_centripetal_acc: 10000.0
+if_directly_constrain_v_omega: false
+
+# MSPConfig
+mean_time_lowBound: 0.0
+mean_time_uppBound: 10.0
+smoothEps: 0.1
+safeDis_: 0.5
+finalMinSafeDis: 0.3
+finalSafeDisCheckNum: 5
+safeReplanMaxTime: 10
+
+# Energy weights
+_energyWeights: [0.33, 1.0]
+_EqualLambda: [0, 0]
+_EqualRho: [1000.00, 1000.0] 
+_EqualRhoMax: [1.0e+10, 1.0e+10]
+_EqualGamma: [90.0, 90.0]           # Growth rate
+_EqualTolerance: [0.01, 0.0]          # Maximum error
+_CutEqualLambda: [0, 0]
+_CutEqualRhoMax: [1.0e+10, 1.0e+10]    # Maximum value
+_CutEqualRho: [1000.00, 1000.0]      # Initial value
+_CutEqualGamma: [5.0, 5.0]       # Growth rate
+_CutEqualTolerance: [0.5, 0.0]      # Maximum error  
+
+
+# Sampling parameters
+sparseResolution: 10
+timeResolution: 0.1
+mintrajNum: 5
+trajPredictResolution: 0.05
+if_visual_optimization: false
+hrz_limited: false
+hrz_laser_range_dgr: 360.0
+
+# ICR parameters
+ICR_yl: 0.0
+ICR_xv: 0.0
+ICR_yr: 0.0
+if_standard_diff: true
+
+# PenaltyWeights
+penalty_weights:
+  time_weight: 1.0
+  time_weight_backup_for_replan: 1.0
+  acc_weight: 1.0
+  domega_weight: 1.0
+  collision_weight: 10.0
+  moment_weight: 1.0
+  mean_time_weight: 1.0
+  cen_acc_weight: 1.0
+
+# PathpenaltyWeights
+path_penalty_weights:
+  time_weight: 1.0
+  bigpath_sdf_weight: 1.0
+  mean_time_weight: 1.0
+  moment_weight: 1.0
+  acc_weight: 1.0
+  domega_weight: 1.0
+
+# PathLbfgsParams
+path_lbfgs_params:
+  normal_past: 5
+  shot_path_past: 3
+  shot_path_horizon: 10
+
+# JPSPlannerParams
+jps_planner_params:
+  safe_dis_: 0.5
+  max_jps_dis_: 5.0
+  distance_weight_: 1.0
+  yaw_weight_: 0.5
+  trajCutLength_: 2.0
+  max_vel_: 5.0
+  max_acc_: 5.0
+  max_omega_: 1.0
+  max_domega_: 50.0
+  sampletime_: 0.1
+  mintrajNum_: 5
+
+# OccupancyGridMapConfig
+occupancy_grid_map:
+  resolution: 0.05
+  detection_range: 5.0
+  global_x_lower: -10.0
+  global_x_upper: 10.0
+  global_y_lower: -10.0
+  global_y_upper: 10.0
+  if_perspective: false
+  if_cirSupRaycast: true
+  hrz_limited: false
+  hrz_laser_range_dgr: 360.0
+  p_hit: 0.7
+  p_miss: 0.3
+  p_min: 0.1
+  p_max: 0.9
+  p_occ: 0.5

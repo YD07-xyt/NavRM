@@ -31,28 +31,47 @@ bool JPSPlanner::plan(const Eigen::Vector3d &start, const Eigen::Vector3d &goal)
     end_state_ = goal;
     
     Eigen::Vector2i start_idx = map_util_->occupancy_grid_map.coord2gridIndex(start.head(2));
+    
     Eigen::Vector2i goal_idx = map_util_->occupancy_grid_map.coord2gridIndex(goal.head(2));
     
-    double start_dis = map_util_->occupancy_grid_map.getDistanceReal(map_util_->occupancy_grid_map.gridIndex2coordd(start_idx)) * 0.8;
-    double goal_dis = map_util_->occupancy_grid_map.getDistanceReal(map_util_->occupancy_grid_map.gridIndex2coordd(goal_idx)) * 0.8;
+    // ? 为什么不传start.head(2)
+    /** 
+    @param: *0.8   留出额外的安全空间
+    */
+    double start_dis = map_util_->occupancy_grid_map.getDistanceReal(
+      map_util_->occupancy_grid_map.gridIndex2coordd(start_idx)) * 0.8;
+    
+    double goal_dis = map_util_->occupancy_grid_map.getDistanceReal(
+      map_util_->occupancy_grid_map.gridIndex2coordd(goal_idx)) * 0.8;
+
+      
     double safe_dis = std::max(std::min(safe_dis_, start_dis), 0.0);
+    
     safe_dis = std::max(std::min(safe_dis, goal_dis), 0.0);
 
+      //TODO: 优化max_expand参数传入
     graph_search_->plan(start_idx(0), start_idx(1), goal_idx(0), goal_idx(1), true, 1e10);
 
     const auto path = graph_search_->getPath();
+    
     if (path.size() < 1) {
-        std::cout << "Cannot find a path from " << start.transpose() <<" to " << goal.transpose() << " Abort!" << std::endl;
+      //TODO :log 
+      //rmlog::warn("Cannot find a path from {} to {} Abort!", 
+        //  start.transpose(), goal.transpose());
+        //TODO: 规划失败的处理，当前仅返回false，后续可以考虑发布空路径或其他方式通知系统
+        //TODO: status_的优化
         status_ = -1;
         return false;
     }
 
+    //存储转换后的路径点
     std::vector<Eigen::Vector2d> ps;
+
     for (const auto &it : path) {
         ps.push_back(map_util_->occupancy_grid_map.gridIndex2coordd(Eigen::Vector2i(it->x, it->y)));
     }
 
-    //TODO
+    //TODO： ros2 发布路径，后续从jps-planner独立出来
     //pubPath(ps, init_path_pub_);
 
     raw_path_ = ps;
@@ -105,26 +124,30 @@ std::vector<Eigen::Vector2d> JPSPlanner::removeCornerPts(const std::vector<Eigen
     optimized_path.push_back(pose1);
     double cost1, cost2, cost3;
 
-    if (!checkLineCollision(pose1, pose2))
+    if (!checkLineCollision(pose1, pose2)){
         cost1 = (pose1 - pose2).norm();
-    else
+    }
+    else{
         cost1 = std::numeric_limits<double>::infinity();
-
+    }
     for (unsigned int i = 1; i < path.size() - 1; i++) {
         pose1 = path[i];
         pose2 = path[i + 1];
-        if (!checkLineCollision(pose1, pose2))
+        if (!checkLineCollision(pose1, pose2)){
             cost2 = (pose1 - pose2).norm();
-        else
+        }
+        else{
             cost2 = std::numeric_limits<double>::infinity();
-
-        if (!checkLineCollision(prev_pose, pose2))
+        }
+        if (!checkLineCollision(prev_pose, pose2)){
             cost3 = (prev_pose - pose2).norm();
-        else
+        }
+        else{
             cost3 = std::numeric_limits<double>::infinity();
-
-        if (cost3 < cost1 + cost2)
+        }
+        if (cost3 < cost1 + cost2){
             cost1 = cost3;
+        }
         else {
             optimized_path.push_back(path[i]);
             cost1 = (pose1 - pose2).norm();
@@ -137,9 +160,12 @@ std::vector<Eigen::Vector2d> JPSPlanner::removeCornerPts(const std::vector<Eigen
 }
 
 bool JPSPlanner::checkLineCollision(const Eigen::Vector2d &start, const Eigen::Vector2d &end){
-    std::vector<Eigen::Vector2i> line = getGridsBetweenPoints2D(map_util_->occupancy_grid_map.coord2gridIndex(start), map_util_->occupancy_grid_map.coord2gridIndex(end));
+    std::vector<Eigen::Vector2i> line = getGridsBetweenPoints2D(
+                  map_util_->occupancy_grid_map.coord2gridIndex(start), 
+                    map_util_->occupancy_grid_map.coord2gridIndex(end));
     for(auto line_pt:line){
-        if(map_util_->occupancy_grid_map.isOccWithSafeDis(line_pt, graph_search_->GetSafeDis())){
+        if(map_util_->occupancy_grid_map.isOccWithSafeDis
+            (line_pt, graph_search_->GetSafeDis())){
             return true;
         }
     }
@@ -193,8 +219,9 @@ void JPSPlanner::getKinoNodeWithStartPath(const std::vector<Eigen::Vector3d> &st
       std::vector<Eigen::Vector2d> start_path_2d;
       for(auto pt:start_path){
         start_path_2d.push_back(pt.head(2));
-        //ROS_INFO_STREAM("start_path_3d: " << pt.transpose());
-        std::cout<<"start_path_3d:" << pt.transpose()<<std::endl;
+        //TODO: log 
+        //rmlog::info("start_path_3d: {}", pt.transpose());
+        
         start_path_2d.pop_back();
       }
       raw_path_.insert(raw_path_.begin(), start_path_2d.begin(), start_path_2d.end());
@@ -202,14 +229,18 @@ void JPSPlanner::getKinoNodeWithStartPath(const std::vector<Eigen::Vector3d> &st
     }
     
     // get_small_resolution_path_();
+
+
     path_ = removeCornerPts(raw_path_);
     Unoccupied_path_ = path_;
 
     // for(auto pt:Unoccupied_path_){
-    //   std::cout<<"Unoccupied_path_: "<<pt.transpose()<<std::endl;
+    //   rmlog::info("Unoccupied_path_: {}", pt.transpose());
     // }
+
     //TODO:
     //pubPath(path_, path_pub_);
+    
     getSampleTraj();
     getTrajsWithTime();
 }

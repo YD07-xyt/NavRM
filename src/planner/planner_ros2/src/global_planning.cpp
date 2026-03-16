@@ -4,17 +4,18 @@
 #include <signal.h>
 
 void MySigintHandler(int sig) {
-   // ros::shutdown();
-    // exit(0);
+    rclcpp::shutdown();
+    exit(0);
 }
 
-int main(){
+int main(int argc, char *argv[]) {
   // ros::init(argc, argv, "planmanager");
   // ros::NodeHandle nh("~");
-
-  // PlanManager planmanager(nh);
-  // signal(SIGINT,MySigintHandler);  
   
-  // ros::spin();
+  rclcpp::init(argc, argv);
+  auto plan_manager_node = std::make_shared<PlanManager>(rclcpp::NodeOptions());
+  
+  signal(SIGINT,MySigintHandler);  
+  rclcpp::spin(plan_manager_node);
   return 0;
 }

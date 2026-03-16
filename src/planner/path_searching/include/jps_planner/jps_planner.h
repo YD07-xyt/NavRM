@@ -30,6 +30,7 @@ namespace JPS
         private:
             
             // params
+            // 安全距离
             double safe_dis_;
             double max_jps_dis_;
             double distance_weight_;
@@ -53,7 +54,9 @@ namespace JPS
             std::shared_ptr<planner::map::Map> map_util_;
             std::shared_ptr<GraphSearch> graph_search_;
 
+            // 存储JPS路径规划的结果
             int status_;
+
             std::vector<Eigen::Vector2d> raw_path_;
             std::vector<Eigen::Vector2d> path_;
 
@@ -68,6 +71,8 @@ namespace JPS
 
             FlatTrajData flat_traj_;
 
+
+            //?用于存储JPS路径规划的截断时间阈值?
             double jps_truncation_time_;
 
             explicit JPSPlanner(std::shared_ptr<planner::map::Map> map,JPSPlannerParams params);
@@ -77,7 +82,10 @@ namespace JPS
             void get_small_resolution_path_();
 
             //void pubPath(const std::vector<Eigen::Vector2d> &path, const ros::Publisher &pub);
-
+            
+            /**
+            @brief: 去除JPS规划路径中的冗余拐点，使路径更加平滑高效。
+            */
             std::vector<Eigen::Vector2d> removeCornerPts(const std::vector<Eigen::Vector2d> &path);
 
             bool checkLineCollision(const Eigen::Vector2d &start, const Eigen::Vector2d &end);
@@ -97,7 +105,9 @@ namespace JPS
             double evaluateLength(const double &curt, const double &locallength, const double &localtime, const double &startV, const double &endV, const double &maxV, const double &maxA);
             double evaluateVel(const double &curt, const double &locallength, const double &localtime, const double &startV, const double &endV, const double &maxV, const double &maxA);
             double evaluteTimeOfPos(const double &pos, const double &locallength, const double &startV, const double &endV, const double &maxV, const double &maxA);
-
+            /**
+            @brief 用于检查某个位置是否会发生碰撞
+             */
             bool JPS_check_if_collision(const Eigen::Vector2d &pos);
     };
 

@@ -13,6 +13,7 @@
 #include <unordered_map>// std::unordered_map
 #include <vector>       // std::vector
 
+#include "../../../../tool/rm_log/include/rm_log.hpp"
 
 namespace JPS {
     ///Heap element comparison
@@ -32,12 +33,17 @@ namespace JPS {
 
     ///Define priority queue
     struct State;// forward declaration
+    
     ///State pointer
     using StatePtr = std::shared_ptr<State>;
-    using priorityQueue = boost::heap::d_ary_heap<StatePtr,
-        boost::heap::mutable_<true>,
-        boost::heap::arity<2>,
-        boost::heap::compare<CompareState<StatePtr>>>;
+    
+    //优先队列
+    using priorityQueue = boost::heap::d_ary_heap<
+    StatePtr,                           // 元素类型：状态指针
+    boost::heap::mutable_<true>,        // 启用可变性（可更新节点）
+    boost::heap::arity<2>,              // 2叉堆（即二叉堆）
+    boost::heap::compare<CompareState<StatePtr>>  // 自定义比较器
+    >;
 
     ///Node of the graph in graph search
     struct State {
@@ -83,12 +89,18 @@ namespace JPS {
         {}
     };
 
+    //💩  
     ///Search and prune neighbors for JPS 2D
     struct JPS2DNeib {
         // for each (dx,dy) these contain:
         //    ns: neighbors that are always added
         //    f1: forced neighbors to check
         //    f2: neighbors to add if f1 is forced
+        /**
+            第一维 [9]	0-8	9个可能的方向（包括(0,0)）
+            第二维 [2]	0-1	方向符号（正或负）
+            第三维 [8]/[2]	可变	邻居索引 
+        */
         int ns[9][2][8];
         int f1[9][2][2];
         int f2[9][2][2];
@@ -102,7 +114,13 @@ namespace JPS {
         // diagonal (norm sqrt(2)): 3 neighbors always added
         //                          2 forced neighbors to check
         //                          2 neighbors to add if forced
-        static constexpr int nsz[3][2] = {{8, 0}, {1, 2}, {3, 2}};
+        //- norm = 0: 初始节点（无方向）
+        //- norm = 1: 直线移动 (dx,dy中一个为0)
+        //- norm = √2: 对角线移动 (dx,dy都不为0)
+        // 每种移动类型有多少个邻居
+        static constexpr int nsz[3][2] = {{8, 0}, 
+                                          {1, 2}, 
+                                          {3, 2}};
 
         void print();
         JPS2DNeib();
@@ -236,7 +254,7 @@ namespace JPS {
             int zGoal,
             bool useJps,
             int maxExpand = -1);
-
+        
         /// Get the optimal path
         std::vector<StatePtr> getPath() const;
 
@@ -255,8 +273,10 @@ namespace JPS {
 
     private:
         /// Main planning loop
-        bool
-        plan(StatePtr& currNode_ptr, int max_expand, int start_id, int goal_id);
+        /**
+        @param: max_expand: 最大扩展节点数 
+        */
+        bool plan(StatePtr& currNode_ptr, int max_expand, int start_id, int goal_id);
         /// Get successor function for A*
         void getSucc(const StatePtr& curr,
             std::vector<int>& succ_ids,
@@ -273,7 +293,9 @@ namespace JPS {
         /// Get subscript
         // int coordToId(int x, int y, int z) const;
 
-        /// Check if (x, y) is free
+        /**  
+        @brief: Check if (x, y) is free
+        */
         bool isFree(int x, int y) const;
         /// Check if (x, y, z) is free
         // bool isFree(int x, int y, int z) const;
@@ -287,18 +309,31 @@ namespace JPS {
         // bool isOccupied(int x, int y, int z) const;
 
         /// Clculate heuristic
+        /**
+        @brief Calculate heuristic value 
+        @param x x coordinate
+        @param y y coordinate
+        @return heuristic value
+         */
         double getHeur(int x, int y) const;
         /// Clculate heuristic
         // double getHeur(int x, int y, int z) const;
 
         /// Determine if (x, y) has forced neighbor with direction (dx, dy)
+        /**
+        @brief: 当前节点在给定移动方向上是否存在强制邻居
+        */
         bool hasForced(int x, int y, int dx, int dy);
         /// Determine if (x, y, z) has forced neighbor with direction (dx, dy, dz)
         // bool hasForced(int x, int y, int z, int dx, int dy, int dz);
 
-        /// 2D jump, return true iff finding the goal or a jump point
+        /// 2D jump, return true if finding the goal or a jump point
+        /**
+        @brief: 2d , 沿着给定方向跳跃直到找到跳点或障碍物
+        */
         bool jump(int x, int y, int dx, int dy, int& new_x, int& new_y);
-        /// 3D jump, return true iff finding the goal or a jump point
+
+        /// 3D jump, return true if finding the goal or a jump point
         // bool jump(int x, int y, int z, int dx, int dy, int dz, int& new_x, int& new_y, int& new_z);
 
         /// Initialize 2D jps arrays
@@ -307,20 +342,30 @@ namespace JPS {
         // const char* cMap_;
         std::shared_ptr<planner::map::Map> map_;
         int xDim_, yDim_, zDim_;
+        // heuristic weight
         double eps_;
+        //  控制是否输出详细日志信息的标志
         bool verbose_;
 
         double safe_dis_;
 
         const char val_free_ = 0;
         int xGoal_, yGoal_, zGoal_;
+        // 是否使用2d搜索
         bool use_2d_;
+        // 是否使用jps
         bool use_jps_ = false;
-
+        
+        // 优先队列，存储待扩展的节点，按照f值（g+h）排序
         priorityQueue pq_;
-        std::vector<StatePtr> hm_;
-        std::vector<bool> seen_;
 
+        // 将节点ID直接作为数组索引(伪哈希表)
+        std::vector<StatePtr> hm_;
+        
+        //标记节点是否已被扩展（Closed Set）
+        std::vector<bool> seen_;
+        
+        // 最终路径
         std::vector<StatePtr> path_;
 
         std::vector<std::vector<int>> ns_;

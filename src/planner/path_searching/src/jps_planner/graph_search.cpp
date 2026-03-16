@@ -92,13 +92,20 @@ inline double GraphSearch::getHeur(int x, int y) const {
   return eps_ * std::sqrt((x - xGoal_) * (x - xGoal_) + (y - yGoal_) * (y - yGoal_));
 }
 
+
 bool GraphSearch::plan(int xStart, int yStart, int xGoal, int yGoal, bool useJps, int maxExpand)
 {
+  
   use_2d_ = true;
+  
   pq_.clear();
+  
   path_.clear();
+  
   // hm_.resize(xDim_ * yDim_);
   // seen_.resize(xDim_ * yDim_, false);
+
+  //初始化seen_为false，表示所有节点都未被扩展
   std::fill(seen_.begin(), seen_.end(), false);
   
   // Set jps
@@ -106,55 +113,73 @@ bool GraphSearch::plan(int xStart, int yStart, int xGoal, int yGoal, bool useJps
 
   // Set goal
   int goal_id = coordToId(xGoal, yGoal);
+  
   xGoal_ = xGoal; yGoal_ = yGoal;
 
   // Set start node
   int start_id = coordToId(xStart, yStart);
+  
   StatePtr currNode_ptr = std::make_shared<State>(State(start_id, xStart, yStart, 0, 0));
+  
   currNode_ptr->g = 0;
+  
   currNode_ptr->h = getHeur(xStart, yStart);
 
   return plan(currNode_ptr, maxExpand, start_id, goal_id);
+
 }
+
 
 bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int goal_id) {
   // Insert start node
   currNode_ptr->heapkey = pq_.push(currNode_ptr);
   currNode_ptr->opened = true;
+
   hm_[currNode_ptr->id] = currNode_ptr;
+  
   seen_[currNode_ptr->id] = true;
 
+  //记录节点扩展次数
   int expand_iteration = 0;
+  
   while(true)
   {
     expand_iteration++;
     // get element with smallest cost
-    currNode_ptr = pq_.top(); pq_.pop();
+    
+    currNode_ptr = pq_.top(); 
+    
+    pq_.pop();
+    
     currNode_ptr->closed = true; // Add to closed list
 
     if(currNode_ptr->id == goal_id) {
       if(verbose_){
-        printf("Goal Reached!!!!!!\n\n");
+        rmlog::info("Goal Reached!!!!!!\n\n");
       }
         break;
     }
 
     std::vector<int> succ_ids;
+
     std::vector<double> succ_costs;
+    
     // Get successors
     if(!use_jps_){
+      //TODO:理解
       getSucc(currNode_ptr, succ_ids, succ_costs);
     }
-      else
-     { 
+    else
+    { 
       getJpsSucc(currNode_ptr, succ_ids, succ_costs);
-     }
+    }
+
     if(verbose_)
       {
-        printf("size of succs: %zu\n", succ_ids.size());
+        rmlog::info("size of succs: %zu\n", succ_ids.size());
       }
-        // Process successors
-    for( int s = 0; s < (int) succ_ids.size(); s++ )
+    // Process successors
+    for(int s = 0; s < (int) succ_ids.size(); s++ )
     {
       //see if we can improve the value of succstate
       StatePtr& child_ptr = hm_[succ_ids[s]];
@@ -169,25 +194,30 @@ bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int 
 
         // if currently in OPEN, update
         if( child_ptr->opened && !child_ptr->closed) {
-          pq_.increase( child_ptr->heapkey );       // update heap
+          pq_.increase( child_ptr->heapkey );       
+          // update heap
           child_ptr->dx = (child_ptr->x - currNode_ptr->x);
           child_ptr->dy = (child_ptr->y - currNode_ptr->y);
           child_ptr->dz = (child_ptr->z - currNode_ptr->z);
+          
           if(child_ptr->dx != 0){
-            child_ptr->dx /= std::abs(child_ptr->dx);}
+            child_ptr->dx /= std::abs(child_ptr->dx);
+          }
           if(child_ptr->dy != 0){
-            child_ptr->dy /= std::abs(child_ptr->dy);}
-           if(child_ptr->dz != 0){
-            child_ptr->dz /= std::abs(child_ptr->dz);}
+            child_ptr->dy /= std::abs(child_ptr->dy);
+          }
+          if(child_ptr->dz != 0){
+            child_ptr->dz /= std::abs(child_ptr->dz);
+          }
         }
         // if currently in CLOSED
-        else if( child_ptr->opened && child_ptr->closed)
+        else if(child_ptr->opened && child_ptr->closed)
         {
-          printf("ASTAR ERROR!\n");
+          rmlog::error("ASTAR ERROR!");
         }
         else // new node, add to heap
         {
-          //printf("add to open set: %d, %d\n", child_ptr->x, child_ptr->y);
+          //rmlog::info("add to open set: %d, %d\n", child_ptr->x, child_ptr->y);
           child_ptr->heapkey = pq_.push(child_ptr);
           child_ptr->opened = true;
         }
@@ -197,22 +227,22 @@ bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int 
 
     if(maxExpand > 0 && expand_iteration >= maxExpand) {
       if(verbose_){
-        printf("MaxExpandStep [%d] Reached!!!!!!\n\n", maxExpand);
+        rmlog::warn("MaxExpandStep [%d] Reached", maxExpand);
       }
         return false;
     }
 
-    if( pq_.empty()) {
+    if( pq_.empty()){
       if(verbose_){
-        printf("Priority queue is empty!!!!!!\n\n");
+        rmlog::warn("Priority queue is empty");
       }
         return false;
     }
   }
 
   if(verbose_) {
-    printf("goal g: %f, h: %f!\n", currNode_ptr->g, currNode_ptr->h);
-    printf("Expand [%d] nodes!\n", expand_iteration);
+    rmlog::info("goal g: %f, h: %f!\n", currNode_ptr->g, currNode_ptr->h);
+    rmlog::info("Expand [%d] nodes!\n", expand_iteration);
   }
 
   path_ = recoverPath(currNode_ptr, start_id);
@@ -224,6 +254,7 @@ bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int 
 std::vector<StatePtr> GraphSearch::recoverPath(StatePtr node, int start_id) {
   std::vector<StatePtr> path;
   path.push_back(node);
+  //回溯路径直到起点
   while(node && node->id != start_id) {
     node = hm_[node->parentId];
     path.push_back(node);
@@ -274,31 +305,42 @@ void GraphSearch::getSucc(const StatePtr& curr, std::vector<int>& succ_ids, std:
 
 void GraphSearch::getJpsSucc(const StatePtr& curr, std::vector<int>& succ_ids, std::vector<double>& succ_costs) {
   if(use_2d_) {
-    const int norm1 = std::abs(curr->dx)+std::abs(curr->dy);
-    int num_neib = jn2d_->nsz[norm1][0];
-    int num_fneib = jn2d_->nsz[norm1][1];
+    const int norm1 = std::abs(curr->dx)+std::abs(curr->dy);//norm1 = |x|+|y|
+    // 获取该类型的邻居数量
+    int num_neib = jn2d_->nsz[norm1][0]; // 总是添加的邻居数
+    int num_fneib = jn2d_->nsz[norm1][1]; //强迫邻居数
+    // curr -> 方向索引
     int id = (curr->dx+1)+3*(curr->dy+1);
 
-    for( int dev = 0; dev < num_neib+num_fneib; ++dev) {
+    for(int dev = 0; dev < num_neib+num_fneib; ++dev) {
       int new_x, new_y;
       int dx, dy;
+
       if(dev < num_neib) {
+        // 总是添加的邻居
         dx = jn2d_->ns[id][0][dev];
         dy = jn2d_->ns[id][1][dev];
-        if(!jump(curr->x, curr->y, dx, dy, new_x, new_y)) {continue;}
+        
+        if(!jump(curr->x, curr->y, dx, dy, new_x, new_y)) {
+          continue;
+        }
+
       }
       else {
+        // 强迫邻居
         int nx = curr->x + jn2d_->f1[id][0][dev-num_neib];
         int ny = curr->y + jn2d_->f1[id][1][dev-num_neib];
         if(!isFree(nx,ny)) {
           dx = jn2d_->f2[id][0][dev-num_neib];
           dy = jn2d_->f2[id][1][dev-num_neib];
-          if(!jump(curr->x, curr->y, dx, dy, new_x, new_y)) {continue;}
+          if(!jump(curr->x, curr->y, dx, dy, new_x, new_y)) {
+            continue;
+          }
         }
         else{
           continue;
         }
-        }
+      }
 
       int new_id = coordToId(new_x, new_y);
       if(!seen_[new_id]) {
@@ -311,6 +353,8 @@ void GraphSearch::getJpsSucc(const StatePtr& curr, std::vector<int>& succ_ids, s
             (new_y - curr->y) * (new_y - curr->y)));
     }
   }
+  // 不使用2d的情况
+
   // else {
   //   const int norm1 = std::abs(curr->dx)+std::abs(curr->dy)+std::abs(curr->dz);
   //   int num_neib = jn3d_->nsz[norm1][0];
@@ -362,23 +406,33 @@ void GraphSearch::getJpsSucc(const StatePtr& curr, std::vector<int>& succ_ids, s
 bool GraphSearch::jump(int x, int y, int dx, int dy, int& new_x, int& new_y ) {
   new_x = x + dx;
   new_y = y + dy;
-  if (!isFree(new_x, new_y))
-  {  return false;}
-  if (new_x ==  xGoal_ && new_y == yGoal_)
-   { return true;}
+  if(!isFree(new_x, new_y)){  
+    return false;
+  }
+  if(new_x ==  xGoal_ && new_y == yGoal_){ 
+    return true;
+  }
 
-  if (hasForced(new_x, new_y, dx, dy))
-    {return true;}
+  if(hasForced(new_x, new_y, dx, dy)){
+    return true;
+  }
+  
+  //TODO：独立(x,y)=>(dx,dy)的id计算方式，jn2d_的id计算方式
   const int id = (dx+1)+3*(dy+1);
+
   const int norm1 = std::abs(dx) + std::abs(dy);
+  //检查其他方向是否有跳点（对角线移动时需要）
   int num_neib = jn2d_->nsz[norm1][0];
-  for( int k = 0; k < num_neib-1; ++k )
+  for(int k = 0; k < num_neib-1; ++k )
   {
     int new_new_x, new_new_y;
     if(jump(new_x, new_y, jn2d_->ns[id][0][k], jn2d_->ns[id][1][k],
-        new_new_x, new_new_y)) {return true;}
+        new_new_x, new_new_y)) {
+          return true;
+    }
   }
 
+  //继续沿原方向跳跃
   return jump(new_x, new_y, dx, dy, new_x, new_y);
 }
 
@@ -413,12 +467,15 @@ bool GraphSearch::jump(int x, int y, int dx, int dy, int& new_x, int& new_y ) {
 
 inline bool GraphSearch::hasForced(int x, int y, int dx, int dy) {
   const int id = (dx+1)+3*(dy+1);
-  for( int fn = 0; fn < 2; ++fn )
+  //检查两个强制邻居位置（直线/对角线移动都有2个强制邻居）
+  for(int fn = 0; fn < 2; ++fn )
   {
     int nx = x + jn2d_->f1[id][0][fn];
     int ny = y + jn2d_->f1[id][1][fn];
+    // 如果强制邻居位置有障碍物，则当前点是跳点
     if( !isFree(nx,ny) ){
-      return true;}
+      return true;
+    }
   }
   return false;
 }
@@ -508,6 +565,7 @@ double GraphSearch::GetSafeDis(){
   return safe_dis_;
 }
 
+// 💩 静态这一块
 constexpr int JPS2DNeib::nsz[3][2];
 
 JPS2DNeib::JPS2DNeib() {
@@ -516,9 +574,10 @@ JPS2DNeib::JPS2DNeib() {
     for(int dx = -1; dx <= 1; ++dx) {
       int norm1 = std::abs(dx) + std::abs(dy);
       for(int dev = 0; dev < nsz[norm1][0]; ++dev)
-        {Neib(dx,dy,norm1,dev, ns[id][0][dev], ns[id][1][dev]);
+        {
+          Neib(dx,dy,norm1,dev, ns[id][0][dev], ns[id][1][dev]);
         }
-          for(int dev = 0; dev < nsz[norm1][1]; ++dev)
+      for(int dev = 0; dev < nsz[norm1][1]; ++dev)
       {
         FNeib(dx,dy,norm1,dev,
             f1[id][0][dev],f1[id][1][dev],
@@ -531,12 +590,19 @@ JPS2DNeib::JPS2DNeib() {
 
 void JPS2DNeib::print() {
   for(int dx = -1; dx <= 1; dx++) {
+    
     for(int dy = -1; dy <= 1; dy++) {
+      
       int id = (dx+1)+3*(dy+1);
-      printf("[dx: %d, dy: %d]-->id: %d:\n", dx, dy, id);
-      for(unsigned int i = 0; i < sizeof(f1[id][0])/sizeof(f1[id][0][0]); i++)
-        {printf("                f1: [%d, %d]\n", f1[id][0][i], f1[id][1][i]);
-    }}
+
+      rmlog::info("[dx: %d, dy: %d]-->id: %d:\n", dx, dy, id);
+      
+      for(unsigned int i = 0; i < sizeof(f1[id][0])/sizeof(f1[id][0][0]); i++){
+      
+        rmlog::info("f1: [%d, %d]\n", f1[id][0][i], f1[id][1][i]);
+      
+      }
+    }
   }
 }
 

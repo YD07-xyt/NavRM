@@ -84,11 +84,14 @@ class Visualizer
     }
 
     // the start point and end point
+    /**
+    @brief: 用于在 RViz 中可视化起点和终点的位置和朝向
+    */
     void finalnodePub(const Eigen::Vector3d &init_point, const Eigen::Vector3d &final_point){
       visualization_msgs::msg::Marker marker;
       marker.header.frame_id = "world";
       marker.ns = "init_point";
-      //TODO
+      //TODO from_seconds 时间
       marker.lifetime = rclcpp::Duration::from_seconds(1.5);
       marker.type = visualization_msgs::msg::Marker::ARROW;
       marker.action = visualization_msgs::msg::Marker::ADD;

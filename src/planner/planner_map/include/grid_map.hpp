@@ -103,8 +103,18 @@ namespace planner {
         @return: 归一化后的角度
         */
         inline double normalize_angle(double angle);
-
+        /**
+        @brief: 将栅格索引坐标转换为世界坐标系下的实际物理坐标
+        @param: index - 栅格索引坐标（x, y）
+        @return: 世界坐标系下的实际物理坐标
+        */
         Eigen::Vector2d gridIndex2coordd(const Eigen::Vector2i &index);
+        /**
+        @brief: 将栅格索引坐标转换为世界坐标系下的实际物理坐标
+        @param: x - 栅格索引坐标x
+        @param: y - 栅格索引坐标y
+        @return: 世界坐标系下的实际物理坐标
+        */
         Eigen::Vector2d gridIndex2coordd(const int &x, const int &y);
 
         bool isOccWithSafeDis(const Eigen::Vector2i &index, const double &safe_dis);

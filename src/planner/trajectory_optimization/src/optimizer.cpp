@@ -1158,7 +1158,7 @@ void MSPlanner::get_the_predicted_state(const double& time, Eigen::Vector3d& XYT
     VAJ << v3.y(), a3.y(), j3.y();
     return; 
 }
-
+//从一条已生成的轨迹中，预测机器人在未来某个时间点的状态，并可选地生成路径点。
 std::vector<Eigen::Vector3d> MSPlanner::get_the_predicted_state_and_path(const double &start_time, const double &time, 
                                                                        const Eigen::Vector3d &start_XYTheta, Eigen::Vector3d &XYTheta, bool &if_forward){
     std::vector<Eigen::Vector3d> path;
@@ -1217,10 +1217,13 @@ std::vector<Eigen::Vector3d> MSPlanner::get_the_predicted_state_and_path(const d
     p3 = final_traj_.getPos(check_time);
     v3 = final_traj_.getVel(check_time);
     if(if_standard_diff_){
+        //标准差速模型
         XYTheta.x() += step1_6 * (v1.y()*cos(p1.x()) + 4.0*v2.y()*cos(p2.x()) + v3.y()*cos(p3.x()));
         XYTheta.y() += step1_6 * (v1.y()*sin(p1.x()) + 4.0*v2.y()*sin(p2.x()) + v3.y()*sin(p3.x()));
     }
     else{
+        //带ICR模型
+        // 舵轮是否可行？
         x1 = v1.y()*cos(p1.x()) + v1.x() * ICR_.z() * sin(p1.x());
         x2 = v2.y()*cos(p2.x()) + v2.x() * ICR_.z() * sin(p2.x());
         x3 = v3.y()*cos(p3.x()) + v3.x() * ICR_.z() * sin(p3.x());

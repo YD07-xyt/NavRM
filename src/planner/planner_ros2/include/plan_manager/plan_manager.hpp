@@ -9,6 +9,8 @@
 #include "jps_planner/jps_planner.h"
 #include "optimizer.h"
 #include"visualizer/visualizer.hpp"
+#include"yaml_io.hpp"
+
 
 #include "visualization_msgs/msg/marker.hpp"
 #include "tf2/transform_datatypes.hpp"
@@ -56,14 +58,22 @@ class PlanManager: public rclcpp::Node
     Eigen::Vector3d current_state_VAJ_;
     Eigen::Vector3d current_state_OAJ_;
 
+    //规划开始时间
     double plan_start_time_;
+
+    //规划开始状态 (x,y,theta)
     Eigen::Vector3d plan_start_state_XYTheta;
+    //速度、加速度、加加速度
     Eigen::Vector3d plan_start_state_VAJ;
+    //位置、姿态、角速度？(可能是Orientation, Angular, Jerk)
     Eigen::Vector3d plan_start_state_OAJ;
 
+    // 目标状态 (x,y,theta)
     Eigen::Vector3d goal_state_;    
-
+    
+    // 轨迹开始时间 用于replan?
     rclcpp::Time Traj_start_time_;
+    // 轨迹总时间
     double Traj_total_time_;
 
     rclcpp::Time  loop_start_time_;
@@ -72,8 +82,9 @@ class PlanManager: public rclcpp::Node
     bool have_geometry_;
     //是否有目标点
     bool have_goal_;
-
+    //判断是否yaml文件参数固定最终点
     bool if_fix_final_;
+    
     Eigen::Vector3d final_state_;
 
     double replan_time_;
@@ -93,6 +104,10 @@ class PlanManager: public rclcpp::Node
     PathLbfgsParams path_lbfgs_params;
     JPS::JPSPlannerParams jps_config;
     planner::OccupancyGridMapConfig occmap_config;
+
+    ConfigReader config_reader_;
+    void get_params();
+    void get_params(const rclcpp::Node::SharedPtr node);
   public:
     explicit PlanManager(const rclcpp::NodeOptions &options=rclcpp::NodeOptions());
 
@@ -135,84 +150,14 @@ class PlanManager: public rclcpp::Node
     //主要规划实现
     void MainThread();
 
-    bool findJPSRoad(){
-
-      rclcpp::Time current = this->now();
-      Eigen::Vector3d start_state;
-      std::vector<Eigen::Vector3d> start_path;
-      std::vector<Eigen::Vector3d> start_path_both_end;
-      bool if_forward = true;
-      if(plan_start_time_ > 0){
-        start_path = msplanner_->get_the_predicted_state_and_path(predicted_traj_start_time_, predicted_traj_start_time_ + jps_planner_->jps_truncation_time_, plan_start_state_XYTheta, start_state, if_forward);
-        u_int start_path_size = start_path.size();
-        u_int start_path_i = 0;
-        for(; start_path_i < start_path_size; start_path_i++){
-          if(!jps_planner_->JPS_check_if_collision(start_path[start_path_i].head(2))){
-            break;
-          }
-        }
-        if(start_path_i == 0){
-          start_state = plan_start_state_XYTheta;
-          start_path_both_end.push_back(start_path.front());
-          start_path_both_end.push_back(start_state);
-        }
-        else if(start_path_i < start_path_size){
-          start_path = std::vector<Eigen::Vector3d>(start_path.begin(), start_path.begin() + start_path_i);
-          start_state = start_path.back();
-          start_path_both_end.push_back(start_path.front());
-          start_path_both_end.push_back(start_state);
-        }
-        else{
-          start_path_both_end.push_back(start_path.front());
-          start_path_both_end.push_back(start_state);
-        }
-      }
-      else{
-        start_state = plan_start_state_XYTheta;
-      }
-
-      jps_planner_->plan(start_state, goal_state_);
-      
-      jps_planner_->getKinoNodeWithStartPath(start_path, if_forward, plan_start_state_VAJ, plan_start_state_OAJ);
-
-
-      visualization_msgs::msg::Marker marker;
-      marker.header.frame_id = "world";
-      marker.header.stamp = this->now();
-      marker.ns = "jps_planner";
-      marker.id = 0;
-      marker.type = visualization_msgs::msg::Marker::TEXT_VIEW_FACING;
-      marker.action = visualization_msgs::msg::Marker::ADD;
-      marker.pose.position.x = 11;
-      marker.pose.position.y = 8;
-      marker.pose.position.z = 0;
-      marker.pose.orientation.x = 0.0;
-      marker.pose.orientation.y = 0.0;
-      marker.pose.orientation.z = 0.0;
-      marker.pose.orientation.w = 1.0;
-      marker.scale.z = 0.5;
-      marker.color.a = 1.0; // Don't forget to set the alpha!
-      marker.color.r = 0.0;
-      marker.color.g = 0.0;
-      marker.color.b = 0.0;
-      double search_time = (this->now()-current).seconds() * 1000.0;
-      std::ostringstream out;
-      out << std::fixed <<"JPS: \n"<< std::setprecision(2) << search_time<<" ms";
-      marker.text = out.str();
-      record_pub_->publish(marker);
-
-
-      RCLCPP_INFO(this->get_logger(),"\033[40;36m jps_planner_ search time:%lf  \033[0m", (this->now()-current).seconds());
-
-      return true;
-    }
+    bool findJPSRoad();
 
     void MPCPathPub(const double& traj_start_time){
-      // Eigen::MatrixXd initstate = msplanner_->get_current_iniState();
-      // Eigen::MatrixXd finState = msplanner_->get_current_finState();
-      // Eigen::MatrixXd finalInnerpoints = msplanner_->get_current_Innerpoints();
-      // Eigen::VectorXd finalpieceTime = msplanner_->get_current_finalpieceTime();
-      // Eigen::Vector3d iniStateXYTheta = msplanner_->get_current_iniStateXYTheta();
+      Eigen::MatrixXd initstate = msplanner_->get_current_iniState();
+      Eigen::MatrixXd finState = msplanner_->get_current_finState();
+      Eigen::MatrixXd finalInnerpoints = msplanner_->get_current_Innerpoints();
+      Eigen::VectorXd finalpieceTime = msplanner_->get_current_finalpieceTime();
+      Eigen::Vector3d iniStateXYTheta = msplanner_->get_current_iniStateXYTheta();
 
       // carstatemsgs::Polynome polynome;
       // polynome.header.frame_id = "world";
