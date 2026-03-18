@@ -2,7 +2,10 @@
 
 #ifndef RM_DECISION_BASE_HPP
 #define RM_DECISION_BASE_HPP
-namespace decision {
+
+#include "behaviortree_cpp/behavior_tree.h"
+
+namespace decision{
 
 }
 

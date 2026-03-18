@@ -58,6 +58,7 @@ bool JPSPlanner::plan(const Eigen::Vector3d &start, const Eigen::Vector3d &goal)
       //TODO :log 
       //rmlog::warn("Cannot find a path from {} to {} Abort!", 
         //  start.transpose(), goal.transpose());
+      LOG(WARNING) << YELLOW << "Cannot find a path from " << start.transpose() << " to " << goal.transpose() << " Abort!" << RESET;
         //TODO: 规划失败的处理，当前仅返回false，后续可以考虑发布空路径或其他方式通知系统
         //TODO: status_的优化
         status_ = -1;
@@ -221,7 +222,7 @@ void JPSPlanner::getKinoNodeWithStartPath(const std::vector<Eigen::Vector3d> &st
         start_path_2d.push_back(pt.head(2));
         //TODO: log 
         //rmlog::info("start_path_3d: {}", pt.transpose());
-        
+        LOG(INFO) << GREEN << "start_path_3d: " << pt.transpose() << RESET;
         start_path_2d.pop_back();
       }
       raw_path_.insert(raw_path_.begin(), start_path_2d.begin(), start_path_2d.end());
@@ -236,6 +237,7 @@ void JPSPlanner::getKinoNodeWithStartPath(const std::vector<Eigen::Vector3d> &st
 
     // for(auto pt:Unoccupied_path_){
     //   rmlog::info("Unoccupied_path_: {}", pt.transpose());
+    //   LOG(INFO) << GREEN << "Unoccupied_path_: " << pt.transpose() << RESET;
     // }
 
     //TODO:

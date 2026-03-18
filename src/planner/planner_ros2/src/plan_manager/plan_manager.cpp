@@ -1,38 +1,44 @@
 #include"plan_manager/plan_manager.hpp"
 
-PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manager", options),
-                                                  config_reader_(this->shared_from_this()) {
+PlanManager::PlanManager(rclcpp::Node::SharedPtr node): node_(node),
+                                                  config_reader_(node){ {
       
       /** 
        * TODO: init params 
       */
       get_params();
-     //===============
+     //===============     
+     const auto& occ_config = config_reader_.getOccupancyGridMapConfig();                                   
+      sdfmap_ = std::make_shared<planner::map::Map>(occ_config,node_);
 
-      sdfmap_ = std::make_shared<planner::map::Map>(occmap_config,this->shared_from_this());
-      
       msplanner_ = std::make_shared<MSPlanner>(conf, sdfmap_,
-            msp_config,penaltyWt,PathpenaltyWt ,path_lbfgs_params,this->shared_from_this());
+            msp_config,penaltyWt,PathpenaltyWt ,path_lbfgs_params, node_);
       
       jps_planner_ = std::make_shared<JPS::JPSPlanner>(sdfmap_,jps_config);
 
       //发速度
-      cmd_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",10);  
+      cmd_pub_ = node_->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",10);  
       
       //接受目标点
-      goal_sub_ =this->create_subscription<geometry_msgs::msg::PoseStamped>("/move_base_simple/goal",10, std::bind(&PlanManager::goal_callback, this, std::placeholders::_1));
+      goal_sub_ =node_->create_subscription<geometry_msgs::msg::PoseStamped>("/move_base_simple/goal",
+        10, 
+        std::bind(&PlanManager::goal_callback, this, std::placeholders::_1));
+      
       //odom
-      current_state_sub_ = this->create_subscription<nav_msgs::msg::Odometry>("odom",10, std::bind(&PlanManager::GeometryCallback, this, std::placeholders::_1));
+      current_state_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>("odom",10, 
+        std::bind(&PlanManager::GeometryCallback, this, std::placeholders::_1));
       
       //0.001
-      main_thread_timer_ =this->create_wall_timer(std::chrono::milliseconds(1),  // 1ms周期
+      main_thread_timer_ =node_->create_wall_timer(std::chrono::milliseconds(1),  // 1ms周期
         std::bind(&PlanManager::MainThread, this));
 
       //紧急停车消息
-      emergency_stop_pub_ = this->create_publisher<std_msgs::msg::Bool>("/planner/emergency_stop",1);
+      emergency_stop_pub_ = node_->create_publisher<std_msgs::msg::Bool>("/planner/emergency_stop"
+        ,1);
 
       // 记录规划时间的消息
-      record_pub_ = this->create_publisher<visualization_msgs::msg::Marker>("/planner/calculator_time",1);
+      record_pub_ = node_->create_publisher<visualization_msgs::msg::Marker>("/planner/calculator_time"
+        ,1);
       
       /** 
       TODO: mpc 控制部分
@@ -44,28 +50,28 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
       have_goal_ = false;
       
       
-      if_fix_final_ = this->declare_parameter<bool>("if_fix_final", false);
+      if_fix_final_ = node_->declare_parameter<bool>("if_fix_final", false);
         
       if (if_fix_final_) {
-            final_state_(0) = this->declare_parameter<double>("final_x", 0.0);
-            final_state_(1) = this->declare_parameter<double>("final_y", 0.0);
-            final_state_(2) = this->declare_parameter<double>("final_yaw", 0.0);
+            final_state_(0) = node_->declare_parameter<double>("final_x", 0.0);
+            final_state_(1) = node_->declare_parameter<double>("final_y", 0.0);
+            final_state_(2) = node_->declare_parameter<double>("final_yaw", 0.0);
       }
         
-      replan_time_ = this->declare_parameter<double>("replan_time", 10000.0);
+      replan_time_ = node_->declare_parameter<double>("replan_time", 10000.0);
       
-      max_replan_time_ = this->declare_parameter<double>("max_replan_time", 1.0);
+      max_replan_time_ = node_->declare_parameter<double>("max_replan_time", 1.0);
 
       state_machine_ = StateMachine::IDLE;
 
-      loop_start_time_ = this->now();
+      loop_start_time_ = node_->now();
 
     }
+  }
 
-    void PlanManager::MainThread(){
-      
+void PlanManager::MainThread(){
       if(!have_geometry_ || !have_goal_) {
-        RCLCPP_INFO(this->get_logger(),"Waiting for odom or goal...");
+        //LOG(INFO) <<GREEN<< "Waiting for odom or goal..."<< RESET;
         return;
       }
       // collision check
@@ -88,14 +94,14 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
           
           state_machine_ = EMERGENCY_STOP;
           
-          RCLCPP_INFO_STREAM(this->get_logger(),"current_state_XYTheta_: " 
+          RCLCPP_INFO_STREAM(node_->get_logger(),"current_state_XYTheta_: " 
             << current_state_XYTheta_.transpose());
 
-          RCLCPP_INFO_STREAM(this->get_logger(),"Dis: " 
+          RCLCPP_INFO_STREAM(node_->get_logger(),"Dis: " 
             << sdfmap_->occupancy_grid_map.getDistanceReal
             (Eigen::Vector2d(current_state_XYTheta_.x(), current_state_XYTheta_.y())));
           
-          RCLCPP_ERROR(this->get_logger(),"EMERGENCY_STOP!!! too close to obstacle!!!");
+          RCLCPP_ERROR(node_->get_logger(),"EMERGENCY_STOP!!! too close to obstacle!!!");
           
           return;
         }
@@ -104,9 +110,9 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
       // 如果在空闲状态，或者在规划/重新规划状态但已经超过重新规划时间，则开始新的规划
       if(state_machine_ == StateMachine::IDLE || 
           ((state_machine_ == StateMachine::PLANNING||state_machine_ == StateMachine::REPLAN) 
-            && (this->now() - loop_start_time_).seconds() > replan_time_)){
+            && (node_->now() - loop_start_time_).seconds() > replan_time_)){
         
-        loop_start_time_ = this->now();
+        loop_start_time_ = node_->now();
         
         double current = loop_start_time_.seconds();
         
@@ -154,13 +160,13 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
 
         } 
         
-        RCLCPP_INFO(this->get_logger(),"\033[32;40m \n\n\n\n\n-------------------------------------start new plan------------------------------------------ \033[0m");
+        RCLCPP_INFO(node_->get_logger(),"\033[32;40m \n\n\n\n\n-------------------------------------start new plan------------------------------------------ \033[0m");
         
         // 用于在 RViz 中可视化起点和终点的位置和朝向
         visualizer_->finalnodePub(plan_start_state_XYTheta, goal_state_);
         
-        RCLCPP_INFO(this->get_logger(),"init_state_: %.10f  %.10f  %.10f", plan_start_state_XYTheta(0), plan_start_state_XYTheta(1), plan_start_state_XYTheta(2));
-        RCLCPP_INFO(this->get_logger(),"goal_state_: %.10f  %.10f  %.10f", goal_state_(0), goal_state_(1), goal_state_(2));
+        RCLCPP_INFO(node_->get_logger(),"init_state_: %.10f  %.10f  %.10f", plan_start_state_XYTheta(0), plan_start_state_XYTheta(1), plan_start_state_XYTheta(2));
+        RCLCPP_INFO(node_->get_logger(),"goal_state_: %.10f  %.10f  %.10f", goal_state_(0), goal_state_(1), goal_state_(2));
         /**  
         *  TODO： 优化cout-->rmlog::info
         */
@@ -174,28 +180,28 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
         std::cout<<"plan_start_state_VAJ: "<<plan_start_state_VAJ.transpose()<<std::endl;
         std::cout<<"plan_start_state_OAJ: "<<plan_start_state_OAJ.transpose()<<std::endl;
 
-        RCLCPP_INFO(this->get_logger(),"<arg name=\"start_x_\" value=\"%f\"/>", plan_start_state_XYTheta(0));
-        RCLCPP_INFO(this->get_logger(),"<arg name=\"start_y_\" value=\"%f\"/>", plan_start_state_XYTheta(1));
-        RCLCPP_INFO(this->get_logger(),"<arg name=\"start_yaw_\" value=\"%f\"/>", plan_start_state_XYTheta(2));
-        RCLCPP_INFO(this->get_logger(),"<arg name=\"final_x_\" value=\"%f\"/>", goal_state_(0));
-        RCLCPP_INFO(this->get_logger(),"<arg name=\"final_y_\" value=\"%f\"/>", goal_state_(1));
-        RCLCPP_INFO(this->get_logger(),"<arg name=\"final_yaw_\" value=\"%f\"/>", goal_state_(2));
+        RCLCPP_INFO(node_->get_logger(),"<arg name=\"start_x_\" value=\"%f\"/>", plan_start_state_XYTheta(0));
+        RCLCPP_INFO(node_->get_logger(),"<arg name=\"start_y_\" value=\"%f\"/>", plan_start_state_XYTheta(1));
+        RCLCPP_INFO(node_->get_logger(),"<arg name=\"start_yaw_\" value=\"%f\"/>", plan_start_state_XYTheta(2));
+        RCLCPP_INFO(node_->get_logger(),"<arg name=\"final_x_\" value=\"%f\"/>", goal_state_(0));
+        RCLCPP_INFO(node_->get_logger(),"<arg name=\"final_y_\" value=\"%f\"/>", goal_state_(1));
+        RCLCPP_INFO(node_->get_logger(),"<arg name=\"final_yaw_\" value=\"%f\"/>", goal_state_(2));
 
-        RCLCPP_INFO_STREAM(this->get_logger(),"plan_start_state_VAJ: " << plan_start_state_VAJ.transpose());
-        RCLCPP_INFO_STREAM(this->get_logger(),"plan_start_state_OAJ: " << plan_start_state_OAJ.transpose());
+        RCLCPP_INFO_STREAM(node_->get_logger(),"plan_start_state_VAJ: " << plan_start_state_VAJ.transpose());
+        RCLCPP_INFO_STREAM(node_->get_logger(),"plan_start_state_OAJ: " << plan_start_state_OAJ.transpose());
 
         // front end
         // 路径搜索开始时间
-        rclcpp::Time astar_start_time = this->now();
+        rclcpp::Time astar_start_time = node_->now();
         // findJPSRoad()只返回ture? why? TODO:理解
         //永不执行 ？
         if(!findJPSRoad()){
           state_machine_ = EMERGENCY_STOP;
-          RCLCPP_ERROR(this->get_logger(),"EMERGENCY_STOP!!! can not find astar road !!!");
+          RCLCPP_ERROR(node_->get_logger(),"EMERGENCY_STOP!!! can not find astar road !!!");
           return;
         }
-        RCLCPP_INFO(this->get_logger(),
-        "\033[41;37m all of front end time:%f \033[0m", (this->now()-astar_start_time).seconds());
+        RCLCPP_INFO(node_->get_logger(),
+        "\033[41;37m all of front end time:%f \033[0m", (node_->now()-astar_start_time).seconds());
 
         // optimizer
         //TODO:理解为什么要在这里进行优化器的调用?
@@ -205,8 +211,8 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
           return;
         }
 
-        RCLCPP_INFO(this->get_logger(),
-          "\033[43;32m all of plan time:%f \033[0m", (this->now().seconds()-current));
+        RCLCPP_INFO(node_->get_logger(),
+          "\033[43;32m all of plan time:%f \033[0m", (node_->now().seconds()-current));
 
         // visualization
         // 发布轨迹和路径点到 RViz 进行可视化
@@ -220,7 +226,7 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
         // 记录当前规划的起始状态和时间，以便在需要重新规划时使用
         if(plan_start_time_ < 0){
           // 首次规划 系统刚启动，还没有进行过规划 之前的规划已被清除
-          Traj_start_time_ = this->now();
+          Traj_start_time_ = node_->now();
           plan_start_time_ = Traj_start_time_.seconds();
         }
         else{
@@ -237,16 +243,17 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
       }
 
       // 轨迹完成检测
-      if((this->now() - Traj_start_time_).seconds() >= Traj_total_time_){
+      if((node_->now() - Traj_start_time_).seconds() >= Traj_total_time_){
         state_machine_ = StateMachine::IDLE;
         have_goal_ = false;
       }
 
     }
 
+
     bool PlanManager::findJPSRoad(){
 
-      rclcpp::Time current = this->now();
+      rclcpp::Time current = node_->now();
 
       Eigen::Vector3d start_state;
       
@@ -312,7 +319,7 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
       //TODO： 独立的可视化函数
       visualization_msgs::msg::Marker marker;
       marker.header.frame_id = "world";
-      marker.header.stamp = this->now();
+      marker.header.stamp = node_->now();
       marker.ns = "jps_planner";
       marker.id = 0;
       marker.type = visualization_msgs::msg::Marker::TEXT_VIEW_FACING;
@@ -329,14 +336,14 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
       marker.color.r = 0.0;
       marker.color.g = 0.0;
       marker.color.b = 0.0;
-      double search_time = (this->now()-current).seconds() * 1000.0;
+      double search_time = (node_->now()-current).seconds() * 1000.0;
       std::ostringstream out;
       out << std::fixed <<"JPS: \n"<< std::setprecision(2) << search_time<<" ms";
       marker.text = out.str();
       record_pub_->publish(marker);
 
 
-      RCLCPP_INFO(this->get_logger(),"\033[40;36m jps_planner_ search time:%lf  \033[0m", (this->now()-current).seconds());
+      RCLCPP_INFO(node_->get_logger(),"\033[40;36m jps_planner_ search time:%lf  \033[0m", (node_->now()-current).seconds());
 
       return true;
     }
@@ -345,15 +352,15 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
       // Ignore the given goal at runtime, commenting out this check may cause unexpected bugs
       // Especially when there is no re-planning
       if(state_machine_ != StateMachine::IDLE){
-        RCLCPP_ERROR(this->get_logger(),"Haven't reached the goal yet!!");
+        RCLCPP_ERROR(node_->get_logger(),"Haven't reached the goal yet!!");
         return;
       }
       
-      RCLCPP_INFO(this->get_logger(),"\n\n\n\n\n\n\n\n");
-      RCLCPP_INFO(this->get_logger(),"---------------------------------------------------------------");
-      RCLCPP_INFO(this->get_logger(),"---------------------------------------------------------------");
+      RCLCPP_INFO(node_->get_logger(),"\n\n\n\n\n\n\n\n");
+      RCLCPP_INFO(node_->get_logger(),"---------------------------------------------------------------");
+      RCLCPP_INFO(node_->get_logger(),"---------------------------------------------------------------");
 
-      RCLCPP_INFO(this->get_logger(),"get goal!");
+      RCLCPP_INFO(node_->get_logger(),"get goal!");
       
       state_machine_ = StateMachine::IDLE;
       have_goal_ = true;
@@ -361,11 +368,11 @@ PlanManager::PlanManager(const rclcpp::NodeOptions & options): Node("plan_manage
       if(if_fix_final_) {
         goal_state_ = final_state_;
       }
-      RCLCPP_INFO_STREAM(this->get_logger(),"goal state: " << goal_state_.transpose());
+      RCLCPP_INFO_STREAM(node_->get_logger(),"goal state: " << goal_state_.transpose());
 
-      RCLCPP_INFO(this->get_logger(),"---------------------------------------------------------------");
-      RCLCPP_INFO(this->get_logger(),"---------------------------------------------------------------");
-      RCLCPP_INFO(this->get_logger(),"\n\n\n\n\n\n\n\n");
+      RCLCPP_INFO(node_->get_logger(),"---------------------------------------------------------------");
+      RCLCPP_INFO(node_->get_logger(),"---------------------------------------------------------------");
+      RCLCPP_INFO(node_->get_logger(),"\n\n\n\n\n\n\n\n");
     
     }
 
@@ -390,5 +397,5 @@ void PlanManager::get_params(){
       path_lbfgs_params = config_reader_.getPathLbfgsParams();
       jps_config = config_reader_.getJPSPlannerParams();
       occmap_config = config_reader_.getOccupancyGridMapConfig();
-
+      LOG(INFO)<<GREEN << "get params from yaml" << RESET ;
 }

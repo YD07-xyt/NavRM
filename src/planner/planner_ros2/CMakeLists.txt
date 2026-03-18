@@ -13,6 +13,7 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
+find_package(glog REQUIRED)
 
 set(OPT_LIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../trajectory_optimization)
 set(PLANNER_MAP_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../planner_map/)
@@ -27,6 +28,7 @@ ament_auto_add_library(planner_ros2_interface STATIC
   src/plan_manager/plan_manager.cpp
 )
 
+target_link_libraries(planner_ros2_interface glog::glog)
 
 ament_auto_add_executable(${PROJECT_NAME}
   src/global_planning.cpp
@@ -36,7 +38,7 @@ target_include_directories(planner_ros2_interface PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}/include
 )
 
-target_link_libraries(${PROJECT_NAME} planner_ros2_interface)
+target_link_libraries(${PROJECT_NAME} planner_ros2_interface )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

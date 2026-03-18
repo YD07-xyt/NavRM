@@ -12,24 +12,24 @@ struct ESDFMapConfig{
 };
 
 struct OccupancyGridMapConfig{
-    double resolution; //分辨率
-    double detection_range; //传感器的最大检测距离
-    double global_x_lower;
-    double global_x_upper;
-    double global_y_lower;
-    double global_y_upper;
+    double resolution=0.6; //分辨率
+    double detection_range=1.0; //传感器的最大检测距离
+    double global_x_lower=5.0;
+    double global_x_upper=5.0;
+    double global_y_lower=5.0;
+    double global_y_upper=5.0;
     bool if_perspective;//透视模式
     bool if_cirSupRaycast;
     //FOV视场角  
     // 是否启用水平视场角限制
     bool hrz_limited;  // true: 启用FOV限制, false: 无限制(360°)
     // 水平激光视场角范围（单位：度）
-    double hrz_laser_range_dgr;
-    double p_hit;      // 占用更新概率
-    double p_miss;     // 空闲更新概率
-    double p_min;     // 最小概率
-    double p_max;     // 最大概率
-    double p_occ;      // 占用阈值
+    double hrz_laser_range_dgr=360.0;
+    double p_hit=1.0;      // 占用更新概率
+    double p_miss=1.0;     // 空闲更新概率
+    double p_min=1.0;     // 最小概率
+    double p_max=1.0;     // 最大概率
+    double p_occ=1.0;      // 占用阈值
     
     // OccupancyGridMapConfig(){
     //     auto yaml_node=tools::load("src/planner/planner_map/planner_map/config/param.yaml");

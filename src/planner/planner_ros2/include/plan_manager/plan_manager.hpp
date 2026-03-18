@@ -10,7 +10,7 @@
 #include "optimizer.h"
 #include"visualizer/visualizer.hpp"
 #include"yaml_io.hpp"
-
+#include"../../../../tool/rm_log/include/glog.hpp"
 
 #include "visualization_msgs/msg/marker.hpp"
 #include "tf2/transform_datatypes.hpp"
@@ -32,7 +32,7 @@ enum StateMachine {
 };
 
 
-class PlanManager: public rclcpp::Node
+class PlanManager
 {
   private:
 
@@ -41,6 +41,9 @@ class PlanManager: public rclcpp::Node
     std::shared_ptr<JPS::JPSPlanner> jps_planner_;
 
     std::shared_ptr<Visualizer> visualizer_;
+
+    rclcpp::Node::SharedPtr node_;
+
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr goal_sub_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr current_state_sub_;
     
@@ -109,7 +112,7 @@ class PlanManager: public rclcpp::Node
     void get_params();
     void get_params(const rclcpp::Node::SharedPtr node);
   public:
-    explicit PlanManager(const rclcpp::NodeOptions &options=rclcpp::NodeOptions());
+    explicit PlanManager(rclcpp::Node::SharedPtr node);
 
     ~PlanManager(){  
 
@@ -119,17 +122,17 @@ class PlanManager: public rclcpp::Node
 
     void printStateMachine(){
       if(state_machine_ == INIT) {
-        RCLCPP_INFO(this->get_logger(),"state_machine_ == INIT");
+        RCLCPP_INFO(node_->get_logger(),"state_machine_ == INIT");
       }
       if(state_machine_ == IDLE) {
-        RCLCPP_INFO(this->get_logger(),"state_machine_ == IDLE");
+        RCLCPP_INFO(node_->get_logger(),"state_machine_ == IDLE");
       }
       if(state_machine_ == PLANNING) 
       {
-        RCLCPP_INFO(this->get_logger(),"state_machine_ == PLANNING");
+        RCLCPP_INFO(node_->get_logger(),"state_machine_ == PLANNING");
       }
       if(state_machine_ == REPLAN) {
-        RCLCPP_INFO(this->get_logger(),"state_machine_ == REPLAN");
+        RCLCPP_INFO(node_->get_logger(),"state_machine_ == REPLAN");
       }
     }
 
@@ -148,7 +151,8 @@ class PlanManager: public rclcpp::Node
 
 
     //主要规划实现
-    void MainThread();
+     void MainThread();
+
 
     bool findJPSRoad();
 

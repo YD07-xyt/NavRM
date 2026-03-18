@@ -1,13 +1,15 @@
 #include"../include/grid_map.hpp"
-#include "../../../tool/rm_log/include/rm_log.hpp"
+#include "../../../tool/rm_log/include/glog.hpp"
 #include <Eigen/src/Core/Matrix.h>
 #include<vector>
 #include <chrono>
 #include"../include/raycast.h"
-namespace planner {
-    namespace map {
-    OccupancyGridMap::OccupancyGridMap(){
+#include<rclcpp/rclcpp.hpp>
+namespace planner::map {
+    OccupancyGridMap::OccupancyGridMap(OccupancyGridMapConfig init_map_param){
         // init map
+        map_params = init_map_param;
+
       GLX_SIZE_ = ceil((map_params.global_x_upper - map_params.global_x_lower) / map_params.resolution);
       GLY_SIZE_ = ceil((map_params.global_y_upper - map_params.global_y_lower) / map_params.resolution);
       GLXY_SIZE_ = GLX_SIZE_ * GLY_SIZE_;
@@ -29,6 +31,9 @@ namespace planner {
 
       count_hit_ = std::vector<short>(GLXY_SIZE_, 0);
       count_hit_and_miss_ = std::vector<short>(GLXY_SIZE_, 0);
+
+      odom_pos = Eigen::Vector3d(0.0, 0.0, 0.0);
+      point_cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
     }
     
 
@@ -38,12 +43,13 @@ namespace planner {
             /**
             TODO: info
             */
+            
+            LOG(INFO)<<YELLOW << "Current odom position: " << odom_pos.transpose() << RESET ;
             return;
         }
         if (!map_params.if_perspective) {
             //TODO:timer 
             //?? 时间意义何为
-            rmlog::info("dd");
             auto timer_start = std::chrono::high_resolution_clock::now();
             x_lower_ = std::max(odom_pos.x() - ceil(map_params.detection_range /
                                                     map_params.resolution) *
@@ -84,7 +90,7 @@ namespace planner {
             Eigen::Vector2i min_id, max_id;
             min_id = coord2gridIndex(Eigen::Vector2d(x_lower_, y_lower_));
             max_id = coord2gridIndex(Eigen::Vector2d(x_upper_, y_upper_));
-
+    
             // // Will treat obstacles as free space
             // for (int x=min_id.x(); x<=max_id.x(); x++) {
             //   for (int y=min_id.y(); y<=max_id.y(); y++){
@@ -98,15 +104,15 @@ namespace planner {
             // }
             // Will not treat obstacles as free space!!
             for (int x=min_id.x(); x<=max_id.x(); x++) {
-            for (int y=min_id.y(); y<=max_id.y(); y++){
-                int vecIndex = Index2Vectornum(x,y);
-                if(gridmap_[vecIndex] == UNKNOWN && occupancy_map_[vecIndex] >= clamp_min_log_ && occupancy_map_[vecIndex] <= min_occupancy_log_){
-                gridmap_[vecIndex] = FREE;
+                for (int y=min_id.y(); y<=max_id.y(); y++){
+                    int vecIndex = Index2Vectornum(x,y);
+                    if(gridmap_[vecIndex] == UNKNOWN && occupancy_map_[vecIndex] >= clamp_min_log_ && occupancy_map_[vecIndex] <= min_occupancy_log_){
+                        gridmap_[vecIndex] = FREE;
+                    }
+                    else if(occupancy_map_[vecIndex] > min_occupancy_log_){
+                        gridmap_[vecIndex] = OCCUPIED;
+                    }
                 }
-                else if(occupancy_map_[vecIndex] > min_occupancy_log_){
-                gridmap_[vecIndex] = OCCUPIED;
-                }
-            }
             }
         }
         else {
@@ -133,14 +139,18 @@ namespace planner {
                     }
                 }
             }
+            if (!point_cloud) {
+                LOG(WARNING)<<YELLOW << "Point cloud is null, skipping updateOccupancycallback 透视模式"<<RESET ;
+                return ;
+            }
 
             for(auto point:point_cloud->points){
-            Eigen::Vector2d coord = Eigen::Vector2d(point.x, point.y);
-            if(!isInGlobalMap(coord)){
-                continue;
-            }
-            Eigen::Vector2i idx = coord2gridIndex(coord);
-            gridmap_[Index2Vectornum(idx)] = OCCUPIED;
+                Eigen::Vector2d coord = Eigen::Vector2d(point.x, point.y);
+                if(!isInGlobalMap(coord)){
+                    continue;
+                }
+                Eigen::Vector2i idx = coord2gridIndex(coord);
+                gridmap_[Index2Vectornum(idx)] = OCCUPIED;
             }
         }
         has_map_ = true;
@@ -151,6 +161,10 @@ namespace planner {
         std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> point_cloud,
         Eigen::Vector3d odom_pos)
     {
+        if (!point_cloud) {
+            LOG(WARNING)<<YELLOW << "Point cloud is null, skipping raycast process."<<RESET ;
+            return ;
+        }
         Eigen::Vector2d cur_point;//当前点
         Eigen::Vector2d odom_pos_xy = odom_pos.head(2); // 机器人当前位置
         int vox_idx; 
@@ -478,7 +492,8 @@ void OccupancyGridMap::cirSupRaycastProcess(Eigen::Vector3d odom_pos){
     int OccupancyGridMap::setCacheOccupancy(Eigen::Vector2d pos, int occ) {
         // 只接受 0(空闲) 或 1(占用)
         if (occ != 1 && occ != 0) {
-            rmlog::warn("occ is not 1 / 0");
+            //rmlog::warn("occ is not 1 / 0");
+            LOG(WARNING) << YELLOW << "Invalid occupancy value: " << occ << RESET;
             return -1;
         }
         // 世界坐标 → 栅格索引
@@ -577,7 +592,8 @@ void OccupancyGridMap::cirSupRaycastProcess(Eigen::Vector3d odom_pos){
     bool OccupancyGridMap::isInGlobalMap(const Eigen::Vector2d& pt)
     {
         if (pt.hasNaN() || !pt.allFinite()) {
-            rmlog::info("pt has nan");
+            //rmlog::info("pt has nan");
+            LOG(INFO) << YELLOW << "Point has NaN or infinite values: " << pt.transpose() << RESET;
             return false;
         }
         return pt.x() < map_params.global_x_upper &&
@@ -622,6 +638,7 @@ void OccupancyGridMap::cirSupRaycastProcess(Eigen::Vector3d odom_pos){
 
     void OccupancyGridMap::updateESDFCallback(){
         if(!esdf_need_update_) {
+            LOG(INFO) << YELLOW << "ESDF is up to date, skipping update." << RESET;
             return;
         }
         Eigen::Vector2d odom_pos_xy=odom_pos.head(2);
@@ -938,5 +955,5 @@ void OccupancyGridMap::cirSupRaycastProcess(Eigen::Vector3d odom_pos){
         index(1) = num % GLY_SIZE_;
         return index;
     }
-}
-}// namespace planner
+
+}// namespace planner::map

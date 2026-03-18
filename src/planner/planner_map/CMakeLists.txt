@@ -17,7 +17,7 @@ ament_auto_find_build_dependencies()
 find_package(Eigen3 REQUIRED)
 
 find_package(PCL REQUIRED)
-
+find_package(glog REQUIRED)
 
 
 
@@ -30,7 +30,7 @@ ament_auto_add_library(planner_map STATIC
 
 target_include_directories(planner_map PUBLIC include)
 
-target_link_libraries(planner_map ${PCL_LIBRARIES})
+target_link_libraries(planner_map ${PCL_LIBRARIES} glog::glog)
 
 #target_link_libraries(planner_map_node planner_map)
 

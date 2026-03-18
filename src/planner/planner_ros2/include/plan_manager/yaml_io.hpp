@@ -41,9 +41,9 @@ private:
         node_->declare_parameter<std::vector<double>>("_energyWeights", std::vector<double>{1.0, 1.0, 1.0});
         node_->declare_parameter<std::vector<double>>("_EqualLambda", std::vector<double>{1.0, 1.0, 1.0});
                node_->declare_parameter<std::vector<double>>("_EqualRho", 
-            std::vector<double>{1000.0, 1000.0});
+            std::vector<double>{10.0, 10.0});
         node_->declare_parameter<std::vector<double>>("_EqualRhoMax", 
-            std::vector<double>{1.0e+10, 1.0e+10});
+            std::vector<double>{1.0, 1.0});
         node_->declare_parameter<std::vector<double>>("_EqualGamma", 
             std::vector<double>{90.0, 90.0});
         node_->declare_parameter<std::vector<double>>("_EqualTolerance", 
@@ -51,9 +51,9 @@ private:
         node_->declare_parameter<std::vector<double>>("_CutEqualLambda", 
             std::vector<double>{0.0, 0.0});
         node_->declare_parameter<std::vector<double>>("_CutEqualRhoMax", 
-            std::vector<double>{1.0e+10, 1.0e+10});
+            std::vector<double>{1.0, 1.0});
         node_->declare_parameter<std::vector<double>>("_CutEqualRho", 
-            std::vector<double>{1000.0, 1000.0});
+            std::vector<double>{10.0, 10.0});
         node_->declare_parameter<std::vector<double>>("_CutEqualGamma", 
             std::vector<double>{5.0, 5.0});
         node_->declare_parameter<std::vector<double>>("_CutEqualTolerance", 
@@ -111,12 +111,12 @@ private:
         node_->declare_parameter<int>("jps_planner_params.mintrajNum_", 5);
 
         // OccupancyGridMapConfig
-        node_->declare_parameter<double>("occupancy_grid_map.resolution", 0.05);
-        node_->declare_parameter<double>("occupancy_grid_map.detection_range", 5.0);
-        node_->declare_parameter<double>("occupancy_grid_map.global_x_lower", -10.0);
-        node_->declare_parameter<double>("occupancy_grid_map.global_x_upper", 10.0);
-        node_->declare_parameter<double>("occupancy_grid_map.global_y_lower", -10.0);
-        node_->declare_parameter<double>("occupancy_grid_map.global_y_upper", 10.0);
+        node_->declare_parameter<double>("occupancy_grid_map.resolution", 0.5);
+        node_->declare_parameter<double>("occupancy_grid_map.detection_range", 1.0);
+        node_->declare_parameter<double>("occupancy_grid_map.global_x_lower", -5.0);
+        node_->declare_parameter<double>("occupancy_grid_map.global_x_upper", 5.0);
+        node_->declare_parameter<double>("occupancy_grid_map.global_y_lower", -5.0);
+        node_->declare_parameter<double>("occupancy_grid_map.global_y_upper", 5.0);
         node_->declare_parameter<bool>("occupancy_grid_map.if_perspective", false);
         node_->declare_parameter<bool>("occupancy_grid_map.if_cirSupRaycast", true);
         node_->declare_parameter<bool>("occupancy_grid_map.hrz_limited", false);
@@ -237,7 +237,8 @@ public:
     const PathpenaltyWeights& getPathPenaltyWeights() const { return path_penalty_weights_; }
     const PathLbfgsParams& getPathLbfgsParams() const { return path_lbfgs_params_; }
     const JPS::JPSPlannerParams& getJPSPlannerParams() const { return jps_params_; }
-    const planner::OccupancyGridMapConfig& getOccupancyGridMapConfig() const { return occupancy_config_; }
+    const planner::OccupancyGridMapConfig& getOccupancyGridMapConfig() const {
+        return occupancy_config_; }
 
 private:
     rclcpp::Node::SharedPtr node_;

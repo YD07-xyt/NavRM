@@ -55,18 +55,23 @@ namespace planner {
         return std::make_tuple(in_box, dist, grad);
     };
 
-    Map::Map(const OccupancyGridMapConfig &init_map_params,const rclcpp::Node::SharedPtr node){
-        occupancy_grid_map.map_params = init_map_params;
-        
-        occtimer_ = node->create_wall_timer(
+    Map::Map(const OccupancyGridMapConfig &init_map_params,const rclcpp::Node::SharedPtr node):
+    occupancy_grid_map(init_map_params), node_(node){
+
+        pub_gridmap_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>("gridmap", 
+                    10);
+        pub_ESDF_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>("ESDF", 
+                10);
+
+        occtimer_ = node_->create_wall_timer(
         std::chrono::milliseconds(500), 
         std::bind(&Map::Occupancycallback, this));
         
-        esdftimer_ = node->create_wall_timer(
+        esdftimer_ = node_->create_wall_timer(
         std::chrono::milliseconds(500), 
         std::bind(&Map::ESDFcallback, this));
 
-        vistimer_ = node->create_wall_timer(
+        vistimer_ = node_->create_wall_timer(
         std::chrono::milliseconds(500),
         std::bind(&Map::visCallback, this));
 
@@ -77,6 +82,7 @@ namespace planner {
     void Map::publish_gridmap(){
         pcl::PointCloud<pcl::PointXYZI> cloud_vis;
         sensor_msgs::msg::PointCloud2 map_vis;
+
         for(int idx = 1;idx < occupancy_grid_map.GLXY_SIZE_;idx++){
             
             // if(gridmap_[idx]==Unoccupied){
@@ -104,7 +110,6 @@ namespace planner {
             }
 
         }
-
         pcl::PointXYZI pt;
         pt.x = 100.0; pt.y = 100.0; pt.z = 0.1;
         pt.intensity = 10.0;
@@ -116,6 +121,7 @@ namespace planner {
         pcl::toROSMsg(cloud_vis, map_vis);
         map_vis.header.frame_id = "world";
         pub_gridmap_->publish(map_vis);
+        LOG(INFO) << GREEN << "Occupancy grid map published" << RESET;
 }
 
 void Map::pointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg){
@@ -142,6 +148,9 @@ void Map::pointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
   pcl::fromROSMsg(transformed_cloud, *occupancy_grid_map.point_cloud);
   
   occupancy_grid_map.occ_need_update_ = true;
+
+  LOG(INFO) << GREEN << "Received point cloud and updated odometry position: " 
+            << occupancy_grid_map.odom_pos.transpose() << RESET;
 }
 
 void Map::publish_ESDF(){
@@ -163,6 +172,7 @@ void Map::publish_ESDF(){
   pcl::toROSMsg(cloud_vis, surf_vis);
   surf_vis.header.frame_id = "world";
   pub_ESDF_->publish(surf_vis);
+  LOG(INFO) << GREEN << "ESDF published" << RESET;
 }
 
 }

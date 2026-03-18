@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "ROS2 Debug",
-      "type": "cppdbg",
+      "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/install/fiesta/lib/fiesta/map_node",
+      "program": "${workspaceFolder}/install/planner_ros2/lib/planner_ros2/planner_ros2",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

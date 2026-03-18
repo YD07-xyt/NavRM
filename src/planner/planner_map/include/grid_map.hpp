@@ -25,13 +25,20 @@ namespace planner {
     class OccupancyGridMap
     {
     public:
-        OccupancyGridMap();
+        OccupancyGridMap(OccupancyGridMapConfig init_map_param);
         ~OccupancyGridMap(){
             delete[] gridmap_;
             gridmap_ = nullptr;
         };
         void updateOccupancycallback();
-
+    public:
+        OccupancyGridMapConfig map_params;
+        double X_SIZE_,Y_SIZE_,XY_SIZE_;
+        //X，Y方向栅格数 
+        int GLX_SIZE_, GLY_SIZE_,GLXY_SIZE_;
+        
+        double inv_grid_interval_= 1/map_params.resolution; //地图分辨率的倒数
+        
     public:
         double x_upper_ = -std::numeric_limits<double>::infinity(),
                y_upper_ = -std::numeric_limits<double>::infinity();
@@ -57,13 +64,7 @@ namespace planner {
         bool occ_need_update_;
         bool has_map_;
 
-    public:
-        OccupancyGridMapConfig map_params;
-        double X_SIZE_,Y_SIZE_,XY_SIZE_;
-        //X，Y方向栅格数 
-        int GLX_SIZE_, GLY_SIZE_,GLXY_SIZE_;
-        
-        double inv_grid_interval_= 1/map_params.resolution; //地图分辨率的倒数
+
     private:
         void raycastProcess(
             std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> point_cloud,Eigen::Vector3d odom_pos);

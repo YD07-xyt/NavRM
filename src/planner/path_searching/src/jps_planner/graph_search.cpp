@@ -155,7 +155,8 @@ bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int 
 
     if(currNode_ptr->id == goal_id) {
       if(verbose_){
-        rmlog::info("Goal Reached!!!!!!\n\n");
+        //rmlog::info("Goal Reached!!!!!!\n\n");
+        LOG(INFO) << GREEN << "Goal Reached!!!!!!" << RESET;
       }
         break;
     }
@@ -176,11 +177,13 @@ bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int 
 
     if(verbose_)
       {
-        rmlog::info("size of succs: %zu\n", succ_ids.size());
+        //rmlog::info("size of succs: %zu\n", succ_ids.size());
+        LOG(INFO) << GREEN << "size of succs: " << succ_ids.size() << RESET;
       }
     // Process successors
     for(int s = 0; s < (int) succ_ids.size(); s++ )
     {
+
       //see if we can improve the value of succstate
       StatePtr& child_ptr = hm_[succ_ids[s]];
       double tentative_gval = currNode_ptr->g + succ_costs[s];
@@ -213,11 +216,13 @@ bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int 
         // if currently in CLOSED
         else if(child_ptr->opened && child_ptr->closed)
         {
-          rmlog::error("ASTAR ERROR!");
+          //rmlog::error("ASTAR ERROR!");
+          LOG(ERROR) << RED << "ASTAR ERROR!" << RESET;
         }
         else // new node, add to heap
         {
           //rmlog::info("add to open set: %d, %d\n", child_ptr->x, child_ptr->y);
+          LOG(INFO) << GREEN << "add to open set: " << child_ptr->x << ", " << child_ptr->y << RESET;
           child_ptr->heapkey = pq_.push(child_ptr);
           child_ptr->opened = true;
         }
@@ -227,22 +232,26 @@ bool GraphSearch::plan(StatePtr& currNode_ptr, int maxExpand, int start_id, int 
 
     if(maxExpand > 0 && expand_iteration >= maxExpand) {
       if(verbose_){
-        rmlog::warn("MaxExpandStep [%d] Reached", maxExpand);
+        //rmlog::warn("MaxExpandStep [%d] Reached", maxExpand);
+        LOG(WARNING) << YELLOW << "MaxExpandStep [" << maxExpand << "] Reached" << RESET;
       }
         return false;
     }
 
     if( pq_.empty()){
       if(verbose_){
-        rmlog::warn("Priority queue is empty");
+        //rmlog::warn("Priority queue is empty");
+        LOG(WARNING) << YELLOW << "Priority queue is empty" << RESET;
       }
         return false;
     }
   }
 
   if(verbose_) {
-    rmlog::info("goal g: %f, h: %f!\n", currNode_ptr->g, currNode_ptr->h);
-    rmlog::info("Expand [%d] nodes!\n", expand_iteration);
+    //rmlog::info("goal g: %f, h: %f!\n", currNode_ptr->g, currNode_ptr->h);
+    //::info("Expand [%d] nodes!\n", expand_iteration);
+    LOG(INFO) << GREEN << "goal g: " << currNode_ptr->g << ", h: " << currNode_ptr->h << "!" << RESET;
+    LOG(INFO) << GREEN << "Expand [" << expand_iteration << "] nodes!" << RESET;
   }
 
   path_ = recoverPath(currNode_ptr, start_id);
@@ -595,12 +604,12 @@ void JPS2DNeib::print() {
       
       int id = (dx+1)+3*(dy+1);
 
-      rmlog::info("[dx: %d, dy: %d]-->id: %d:\n", dx, dy, id);
-      
+      //rmlog::info("[dx: %d, dy: %d]-->id: %d:\n", dx, dy, id);
+      LOG(INFO) << GREEN << "[dx: " << dx << ", dy: " << dy << "]-->id: " << id << ":" << RESET;
       for(unsigned int i = 0; i < sizeof(f1[id][0])/sizeof(f1[id][0][0]); i++){
       
-        rmlog::info("f1: [%d, %d]\n", f1[id][0][i], f1[id][1][i]);
-      
+        //rmlog::info("f1: [%d, %d]\n", f1[id][0][i], f1[id][1][i]);
+        LOG(INFO) << GREEN << "f1: [" << f1[id][0][i] << ", " << f1[id][1][i] << "]" << RESET;
       }
     }
   }

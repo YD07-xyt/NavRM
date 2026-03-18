@@ -6,6 +6,8 @@
 #include "config.hpp"
 #include "grid_map.hpp"
 #include "rc_esdf.h"
+#include"../../../tool/rm_log/include/glog.hpp"
+
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>

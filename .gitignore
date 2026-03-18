@@ -2,6 +2,7 @@
 /install/
 /log/
 /.cache
+/massif.out
 /src/bringup/pcd/
 /src/location/odometer/point_lio/PCD/
 /compile_commands.json

@@ -13,8 +13,7 @@
 #include <unordered_map>// std::unordered_map
 #include <vector>       // std::vector
 
-#include "../../../../tool/rm_log/include/rm_log.hpp"
-
+#include "../../../../tool/rm_log/include/glog.hpp"
 namespace JPS {
     ///Heap element comparison
     template <class T>
