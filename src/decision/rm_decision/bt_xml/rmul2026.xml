@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4">
+  <BehaviorTree ID="RobotDecisionTree">
+    <ReactiveSequence>
+      <!-- 步骤1: 订阅话题并写入黑板 -->
+      <Topics2Blackboard 
+          current_hp="{current_hp}"
+          projectile_allowance_17mm="{projectile_allowance_17mm}"
+          game_progress="{game_progress}"
+          stage_remain_time="{stage_remain_time}"/>
+      
+      <!-- 步骤2: 决策逻辑 -->
+      <ReactiveFallback>
+        
+        <!-- 分支1: 血量<80 或 弹药<0 回家补给 -->
+        <Sequence>
+          <ScriptCondition code="current_hp &lt; 80 || projectile_allowance_17mm == 0"/>
+          <SetBlackboard value="0" output="{is_scan}"/>
+          <SetBlackboard value="2" output="{sentry_pose}"/>
+          <!-- 写入 home 的 位置-->
+          <Nav2Pose goal="home_position_x,home_position_y,0.0,0.0,0.0,0.0,1.0"/>
+          <RetryUntilSuccessful num_attempts="100">
+            <ScriptCondition code="current_hp &gt;= 400 &amp;&amp; projectile_allowance_17mm &gt; 50"/>
+          </RetryUntilSuccessful>
+        </Sequence>
+        
+        <!-- 分支2: 比赛开始（game_progress == 比赛开始的值）导航到目标点 -->
+        <Sequence _while="game_progress == 4">
+          <!-- 假设比赛进行中为4 -->
+          <!--  写入goal -->
+          <Nav2Pose goal="target_x,target_y,0.0,0.0,0.0,0.0,1.0"/>
+          <SetBlackboard value="1" output="{is_scan}"/>
+          <SetBlackboard value="3" output="{sentry_pose}"/>
+        </Sequence>
+        
+        <!-- 分支3: 默认行为（可选） -->
+        <Sequence>
+          <ScriptCondition code="true"/>
+          <Nav2Pose goal="default_position_x,default_position_y,0.0,0.0,0.0,0.0,1.0"/>
+        </Sequence>
+        
+      </ReactiveFallback>
+    </ReactiveSequence>
+  </BehaviorTree>
+</root>

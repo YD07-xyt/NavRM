@@ -7,6 +7,12 @@
 
 namespace decision{
 
+    class IsGoHome: public BT::ConditionNode{
+        public:
+            IsGoHome();
+            BT::NodeStatus tick() override;
+            
+    };
 }
 
 #endif // RM_DECISION_BASE_HPP

@@ -7,7 +7,7 @@
         "--background-index",
         "--completion-style=detailed",
         "--header-insertion=never",
-        "--query-driver=/usr/bin/g++",
+        "--query-driver=/usr/bin/clang",
         "--all-scopes-completion"
     ],
     "clangd.path": "/usr/bin/clangd",
