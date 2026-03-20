@@ -20,7 +20,7 @@
           <!-- 写入 home 的 位置-->
           <Nav2Pose goal="home_position_x,home_position_y,0.0,0.0,0.0,0.0,1.0"/>
           <RetryUntilSuccessful num_attempts="100">
-            <ScriptCondition code="current_hp &gt;= 400 &amp;&amp; projectile_allowance_17mm &gt; 50"/>
+            <ScriptCondition code="current_hp &gt;= 400 &amp;&amp; projectile_allowance_17mm &gt; 200"/>
           </RetryUntilSuccessful>
         </Sequence>
         

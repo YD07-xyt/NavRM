@@ -36,6 +36,10 @@ namespace decision{
         };
     }
 
+    BT::NodeStatus Topics2Blackboard::tick(){
+        check_subscriber_();
+        return BT::NodeStatus::SUCCESS;
+    }
     void Topics2Blackboard::game_status_callback(const rm_interfaces::msg::GameStatus::SharedPtr msg)
     {
         game_status_ = *msg;
@@ -63,5 +67,23 @@ namespace decision{
     void Topics2Blackboard::bt_data_callback(){
         setOutput("is_scan",this->bt_data_->is_scan);
         setOutput("sentry_pose",this->bt_data_->sentry_pose);
+    }
+
+    void Topics2Blackboard::check_subscriber_()
+    {
+        if(!game_status_)
+        {
+            RCLCPP_WARN(rclcpp::get_logger("Topics2Blackboard"), "game_status_ is null");
+            setOutput<std::uint16_t>("current_hp", 0);
+            setOutput<std::uint8_t>("game_progress", 0);
+            setOutput<std::uint16_t>("stage_remain_time", 0);
+            setOutput<std::uint8_t>("armor_id", 0);
+            setOutput<std::uint8_t>("hurt_type", 0);
+            setOutput<std::uint16_t>("my_outpost_hp", 0);
+            setOutput<std::uint16_t>("enemy_outpost_hp", 0);
+            setOutput<std::uint16_t>("my_base_hp", 0);
+            setOutput<std::uint16_t>("enemy_base_hp", 0);
+            setOutput<std::uint16_t>("projectile_allowance_17mm", 0);
+        }
     }
 }

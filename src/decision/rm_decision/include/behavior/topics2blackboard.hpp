@@ -21,7 +21,7 @@ namespace decision {
             Topics2Blackboard(const std::string &name, const BT::NodeConfig &config, 
                     std::shared_ptr<rclcpp::Node> node);
             ~Topics2Blackboard() = default ;
-            BT::NodeStatus tick() override;
+            BT::NodeStatus tick();
             static BT::PortsList providedPorts();
         private:
             rclcpp::Node::SharedPtr node_;
@@ -38,6 +38,8 @@ namespace decision {
             std::optional<rm_interfaces::msg::BtData> bt_data_;
             void bt_data_callback();
             void init_bt_data();
+        private:
+            void check_subscriber_();
     };
 }
 #endif

@@ -18,6 +18,7 @@ ament_auto_add_library(${PROJECT_NAME} STATIC
     src/behavior/topics2blackboard.cpp
     src/behavior/nav2pose.cpp
     src/behavior/bt2serial.cpp
+    src/behavior/custume_types.cpp
 )
 
 

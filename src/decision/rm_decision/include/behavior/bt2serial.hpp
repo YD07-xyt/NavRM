@@ -14,7 +14,7 @@ namespace decision {
     public:
         BT2Serial(const std::string &name, const BT::NodeConfig &config, std::shared_ptr<rclcpp::Node> node);
         BT::NodeStatus tick();
-        BT::PortsList providedPorts();
+        static BT::PortsList providedPorts();
     private:
         rclcpp::Node::SharedPtr node_;
         rclcpp::Publisher<rm_interfaces::msg::BtData>::SharedPtr bt_data_pub_;
