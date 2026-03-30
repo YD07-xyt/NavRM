@@ -20,10 +20,9 @@
 #include <tf2_ros/buffer.hpp>
 #include "tf2/utils.h"
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>  
+#include<nav_msgs/msg/odometry.hpp>
 
-
-namespace planner {
-    namespace map {
+namespace planner::map {
 
     class Map{
         public:
@@ -39,17 +38,22 @@ namespace planner {
             rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_ESDF_;
             rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_gradESDF_;
             
+            rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_lidar_;
+            rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
             rclcpp::TimerBase::SharedPtr occtimer_;
             rclcpp::TimerBase::SharedPtr esdftimer_;
             rclcpp::TimerBase::SharedPtr vistimer_;
-
+             pcl::PointCloud<pcl::PointXYZ> cloud_;
         public:
+            void pointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+            void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
             void Occupancycallback(){
                 occupancy_grid_map.updateOccupancycallback();
             };
             void ESDFcallback(){
                 occupancy_grid_map.updateESDFCallback();
             };
+
             void publish_gridmap();
             void publish_ESDF();
             void publish_ESDFGrad(){
@@ -66,7 +70,6 @@ namespace planner {
                         // publish_ESDFGrad();
                 }
             }
-            void pointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
         private:
 
     };
@@ -94,7 +97,6 @@ namespace planner {
             std::vector<Eigen::Vector2d> footprint); 
     };
 
-    };
 }// namespace planner
 
 #endif

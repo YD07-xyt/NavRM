@@ -14,12 +14,14 @@ namespace planner::map {
       GLY_SIZE_ = ceil((map_params.global_y_upper - map_params.global_y_lower) / map_params.resolution);
       GLXY_SIZE_ = GLX_SIZE_ * GLY_SIZE_;
       gridmap_ = new uint8_t[GLXY_SIZE_];
+      //
       memset(gridmap_, UNKNOWN, GLXY_SIZE_ * sizeof(uint8_t));
 
       X_SIZE_ = ceil(map_params.detection_range / map_params.resolution) * 2;
       Y_SIZE_ = ceil(map_params.detection_range / map_params.resolution) * 2;
       XY_SIZE_ = X_SIZE_ * Y_SIZE_;
         
+      // 
       prob_hit_log_ = logit(map_params.p_hit);
       prob_miss_log_ = logit(map_params.p_miss);
       clamp_min_log_ = logit(map_params.p_min);
@@ -51,6 +53,9 @@ namespace planner::map {
             //TODO:timer 
             //?? 时间意义何为
             auto timer_start = std::chrono::high_resolution_clock::now();
+            /** 
+            TODO： 奇怪计算 
+            */
             x_lower_ = std::max(odom_pos.x() - ceil(map_params.detection_range /
                                                     map_params.resolution) *
                                                    map_params.resolution,
@@ -72,7 +77,7 @@ namespace planner::map {
             Y_SIZE_ =
                 ceil((y_upper_ - y_lower_) / map_params.resolution);
             XY_SIZE_ = X_SIZE_ * Y_SIZE_;
-
+            //===
             raycastProcess(point_cloud,odom_pos);
 
             if(map_params.if_cirSupRaycast){
@@ -106,7 +111,8 @@ namespace planner::map {
             for (int x=min_id.x(); x<=max_id.x(); x++) {
                 for (int y=min_id.y(); y<=max_id.y(); y++){
                     int vecIndex = Index2Vectornum(x,y);
-                    if(gridmap_[vecIndex] == UNKNOWN && occupancy_map_[vecIndex] >= clamp_min_log_ && occupancy_map_[vecIndex] <= min_occupancy_log_){
+                    if(gridmap_[vecIndex] == UNKNOWN && occupancy_map_[vecIndex] >= clamp_min_log_
+                         && occupancy_map_[vecIndex] <= min_occupancy_log_){
                         gridmap_[vecIndex] = FREE;
                     }
                     else if(occupancy_map_[vecIndex] > min_occupancy_log_){
@@ -154,6 +160,7 @@ namespace planner::map {
             }
         }
         has_map_ = true;
+        esdf_need_update_ = true;
         occ_need_update_ = false;
     }
 
@@ -195,8 +202,9 @@ namespace planner::map {
                     vox_idx = setCacheOccupancy(cur_point, 1);
                 } 
             }
-            std::vector<Eigen::Vector2i> line = getGridsBetweenPoints2D(coord2gridIndex(odom_pos_xy), coord2gridIndex(cur_point));
-    
+            std::vector<Eigen::Vector2i> line = getGridsBetweenPoints2D(
+                    coord2gridIndex(odom_pos_xy), coord2gridIndex(cur_point));
+            
             for (int i=0; i<line.size() - 1; i++) {
                 vox_idx = setCacheOccupancy(line[i], 0);
             }
@@ -530,7 +538,7 @@ void OccupancyGridMap::cirSupRaycastProcess(Eigen::Vector3d odom_pos){
         if (occ == 1) count_hit_[idx_ctns] += 1;
 
         return idx_ctns;
-        }
+    }
     /*
     @brief: 给定一个点 pt（可能在地图外）和机器人位置 pos，找到从机器人指向该点的射线与地图边界的交点，
             并返回一个稍微靠内一点的点。
@@ -650,6 +658,11 @@ void OccupancyGridMap::cirSupRaycastProcess(Eigen::Vector3d odom_pos){
     }
 
     void OccupancyGridMap::updateESDF2d(const Eigen::Vector2d & odom_pos){
+        if (distance_buffer_all_.empty()) {
+            LOG(ERROR) << "distance_buffer_all_ is empty! Initializing...";
+            distance_buffer_all_.resize(GLXY_SIZE_, 0.0);
+        }
+        
         Eigen::Vector2i min_esdf(floor(std::max(0.0, odom_pos.x() - map_params.detection_range - map_params.global_x_lower)*inv_grid_interval_), 
         floor(std::max(0.0, odom_pos.y() - map_params.detection_range - map_params.global_y_lower)*inv_grid_interval_));
         Eigen::Vector2i max_esdf(ceil(std::min(map_params.global_x_upper - map_params.global_x_lower, odom_pos.x() + map_params.detection_range - map_params.global_x_lower)*inv_grid_interval_) - 1,

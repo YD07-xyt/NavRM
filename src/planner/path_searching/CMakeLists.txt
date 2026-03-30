@@ -9,6 +9,7 @@ ament_auto_find_build_dependencies()
 
 find_package(Eigen3 REQUIRED)
 find_package(glog REQUIRED)
+
 ament_auto_add_library(${PROJECT_NAME} STATIC
     src/path_searching_node.cpp
     src/a_star.cpp

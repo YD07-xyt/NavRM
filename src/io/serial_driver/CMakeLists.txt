@@ -29,13 +29,15 @@ else()
 endif()
 
 
-add_library(serial_driver src/serial_driver.cpp
-src/crc.cpp)
+add_library(serial_driver 
+    src/serial_driver.cpp
+    src/crc.cpp)
 
 
 target_include_directories(serial_driver PUBLIC  
     ${Boost_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 
 target_link_libraries(serial_driver PRIVATE
@@ -49,3 +51,29 @@ target_link_libraries(serial_driver PRIVATE
 add_executable(test_serial test/test_serial.cpp)
 
 target_link_libraries(test_serial PRIVATE serial_driver)
+
+
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
+
+ament_auto_add_library(${PROJECT_NAME}_ros2 STATIC
+    src/ros2.cpp
+)
+
+target_include_directories(${PROJECT_NAME}_ros2
+    PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include               
+)
+
+target_link_libraries(${PROJECT_NAME}_ros2  serial_driver)
+
+ament_auto_add_executable(${PROJECT_NAME}_ros2_node
+  src/serial_node.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}_ros2_node ${PROJECT_NAME}_ros2)
+
+ament_auto_package(  
+    USE_SCOPED_HEADER_INSTALL_DIR
+    INSTALL_TO_SHARE
+)

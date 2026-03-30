@@ -10,8 +10,7 @@
 #include <sys/types.h>
 #include<boost/asio.hpp>
 #include<boost/circular_buffer.hpp>
-namespace io {
-    namespace serial {
+namespace io::serial {
         struct SerialConfig{
             std::string device_name;
             int baud_rate;
@@ -41,7 +40,6 @@ namespace io {
                 boost::circular_buffer<uint8_t, std::allocator<uint8_t>> circular_buffer; 
                 std::vector<uint8_t> receive_buffer;
         };        
-    }
 };
 
 #endif

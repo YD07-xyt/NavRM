@@ -55,8 +55,8 @@ namespace planner {
         double prob_hit_log_ ; //观测到占用时的更新量
         double prob_miss_log_; //观测到空闲时的更新量
         double clamp_max_log_; //对数几率的最大值（表示非常确定是占用）
-        double clamp_min_log_; //对数几率的最小值（表示非常确定是空闲）
         double min_occupancy_log_; //用于判断栅格是否为"空闲"的下限值
+        double clamp_min_log_; //对数几率的最小值（表示非常确定是空闲）
     public:
         uint8_t *gridmap_ = nullptr;
 

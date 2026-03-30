@@ -9,8 +9,7 @@
 #include <source_location>
 #include <vector>
 
-namespace io {
-namespace serial {
+namespace io::serial {
   SerialDriver::SerialDriver():receive_buffer(1024){
     auto io_service_  =std::make_shared<boost::asio::io_service>();
     auto serial_port_ = std::make_shared<boost::asio::serial_port>(*io_service_);
@@ -102,5 +101,4 @@ namespace serial {
     }
     return receive_buffer;
   }
-} // namespace serial
 }; // namespace io

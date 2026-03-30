@@ -62,23 +62,8 @@ struct ReceiveRobotStatus {
     uint16_t shooter_barrel_cooling_value;
     // 机器人射击热量上限
     uint16_t shooter_barrel_heat_limit;
-    // 机器人底盘功率上限
-    uint16_t shooter_17mm_1_barrel_heat;
-    // 本机器人位置 x 坐标
-    float robot_pos_x;
-    // 本机器人位置 y 坐标
-    float robot_pos_y;
-    // 本机器人测速模块的朝向
-    float robot_pos_angle;
-    /* 当扣血原因为装甲模块被弹丸攻击、受撞击、离线或测速模块离线时，
-    数值为装甲模块或测速模块的 ID 编号；当其他原因导致扣血时，该数值为 0*/
-    uint8_t armor_id : 4;
-    // 血量变化类型
-    uint8_t hp_deduction_reason : 4;
     // 机器人自身拥有的 17mm 弹丸允许发弹量
     uint16_t projectile_allowance_17mm;
-    // 剩余金币数量
-    uint16_t remaining_gold_coin;
   } __attribute__((packed)) data;
   uint16_t crc;
 } __attribute__((packed));

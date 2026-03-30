@@ -25,7 +25,7 @@ PlanManager::PlanManager(rclcpp::Node::SharedPtr node): node_(node),
         std::bind(&PlanManager::goal_callback, this, std::placeholders::_1));
       
       //odom
-      current_state_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>("odom",10, 
+      current_state_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>("/lio/odom",10, 
         std::bind(&PlanManager::GeometryCallback, this, std::placeholders::_1));
       
       //0.001
