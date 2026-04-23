@@ -16,7 +16,7 @@
         "-I${workspaceFolder}",
         "-I/opt/ros/humble/include/"
     ],
-    "cmake.sourceDirectory": "/home/xyt/My/nav/test",
+    "cmake.sourceDirectory": "/home/xyt/code/nav/navrm/NavRM/src/planner/trajectory_optimization",
     "python.analysis.extraPaths": [
         "/opt/ros/humble/lib/python3.10/site-packages"
     ],

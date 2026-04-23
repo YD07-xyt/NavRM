@@ -6,59 +6,6 @@ std::shared_ptr<tf2_ros::Buffer> planner::map::Map::tf_buffer_ = nullptr;
 
 namespace planner::map {
 
-
-    ESDFMap::ESDFMap(ESDFMapConfig params,
-        std::vector<Eigen::Vector2d>& obs_points_body)
-        : params(params)
-        , obs_points_body_(obs_points_body)
-    {
-
-        ESDFMap::init_esdf_map(ESDFMap::params, ESDFMap::footprint);
-    };
-    void ESDFMap::init_esdf_map(ESDFMapConfig param,
-        std::vector<Eigen::Vector2d> footprint)
-    {
-        ESDFMap::esdf_map.initialize(param.width_m,
-            param.height_m,
-            param.resolution);
-        ESDFMap::esdf_map.generateFromPolygon(footprint);
-    };
-
-
-    void ESDFMap::update_esdf(std::vector<Eigen::Vector2d> footprint)
-    {
-        ESDFMap::esdf_map.generateFromPolygon(footprint);
-    }
-
-
-    std::tuple<bool, double, Eigen::Vector2d> ESDFMap::query(
-        const Eigen::Vector2d& obs_points_body)
-    {
-        bool in_box;
-        double dist;
-        Eigen::Vector2d grad;
-        // 核心查询函数
-        in_box = ESDFMap::esdf_map.query(obs_points_body, dist, grad);
-        return std::make_tuple(in_box, dist, grad);
-    }
-    std::tuple<bool, double, Eigen::Vector2d>
-    ESDFMap::query(int obs_points_body_x, int obs_points_body_y)
-    {
-        bool in_box;
-        double dist;
-        Eigen::Vector2d grad;
-        // 核心查询函数
-        in_box = ESDFMap::esdf_map.query(
-            Eigen::Vector2d(obs_points_body_x, obs_points_body_y),
-            dist,
-            grad);
-        return std::make_tuple(in_box, dist, grad);
-    };
-
-
-
-
-
     //MAP
 
     Map::Map(const OccupancyGridMapConfig& init_map_params,
@@ -102,10 +49,10 @@ namespace planner::map {
         occupancy_grid_map.odom_pos.y() = msg->pose.pose.position.y;
         occupancy_grid_map.odom_pos.z() = tf2::getYaw(msg->pose.pose.orientation);
         
-        RCLCPP_INFO(node_->get_logger(), "Odometry updated: (%.2f, %.2f, %.2f)",
-                    occupancy_grid_map.odom_pos.x(),
-                    occupancy_grid_map.odom_pos.y(),
-                    occupancy_grid_map.odom_pos.z());
+        // RCLCPP_INFO(node_->get_logger(), "Odometry updated: (%.2f, %.2f, %.2f)",
+        //             occupancy_grid_map.odom_pos.x(),
+        //             occupancy_grid_map.odom_pos.y(),
+        //             occupancy_grid_map.odom_pos.z());
     }
     void Map::publish_gridmap()
     {
@@ -243,3 +190,58 @@ namespace planner::map {
         LOG(INFO) << GREEN << "ESDF published" << RESET;
     }
 }// namespace planner::map
+
+
+
+
+//rc_esdf
+namespace planner::map {
+        ESDFMap::ESDFMap(ESDFMapConfig params,
+        std::vector<Eigen::Vector2d>& obs_points_body)
+        : params(params)
+        , obs_points_body_(obs_points_body)
+    {
+
+        ESDFMap::init_esdf_map(ESDFMap::params, ESDFMap::footprint);
+    };
+    void ESDFMap::init_esdf_map(ESDFMapConfig param,
+        std::vector<Eigen::Vector2d> footprint)
+    {
+        ESDFMap::esdf_map.initialize(param.width_m,
+            param.height_m,
+            param.resolution);
+        ESDFMap::esdf_map.generateFromPolygon(footprint);
+    };
+
+
+    void ESDFMap::update_esdf(std::vector<Eigen::Vector2d> footprint)
+    {
+        ESDFMap::esdf_map.generateFromPolygon(footprint);
+    }
+
+
+    std::tuple<bool, double, Eigen::Vector2d> ESDFMap::query(
+        const Eigen::Vector2d& obs_points_body)
+    {
+        bool in_box;
+        double dist;
+        Eigen::Vector2d grad;
+        // 核心查询函数
+        in_box = ESDFMap::esdf_map.query(obs_points_body, dist, grad);
+        return std::make_tuple(in_box, dist, grad);
+    }
+    std::tuple<bool, double, Eigen::Vector2d>
+    ESDFMap::query(int obs_points_body_x, int obs_points_body_y)
+    {
+        bool in_box;
+        double dist;
+        Eigen::Vector2d grad;
+        // 核心查询函数
+        in_box = ESDFMap::esdf_map.query(
+            Eigen::Vector2d(obs_points_body_x, obs_points_body_y),
+            dist,
+            grad);
+        return std::make_tuple(in_box, dist, grad);
+    };
+
+}

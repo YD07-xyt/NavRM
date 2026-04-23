@@ -4,7 +4,7 @@
 // #include "../../../..tool/io_yaml/include/io_yaml.hpp"
 namespace planner {
 
-
+//TODO:参数未设置
 struct ESDFMapConfig{
     double width_m;
     double height_m;
@@ -25,12 +25,12 @@ struct OccupancyGridMapConfig{
     bool hrz_limited;  // true: 启用FOV限制, false: 无限制(360°)
     // 水平激光视场角范围（单位：度）
     double hrz_laser_range_dgr=360.0;   
-    double p_hit;
-    double p_miss;
-    double p_min;
-    double p_max;
-    double p_occ;
-    
+    double p_hit =0.79;
+    double p_miss=0.35;
+    double p_min=0.12;
+    double p_max=0.90;
+    double p_occ=0.8;
+
     // OccupancyGridMapConfig(){
     //     auto yaml_node=tools::load("src/planner/planner_map/planner_map/config/param.yaml");
     //     resolution=tools::read<double>(yaml_node, "resolution");
