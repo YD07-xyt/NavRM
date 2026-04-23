@@ -17,3 +17,5 @@ terrain_analysis_ext:
     terrainConnThre: 0.5
     ceilingFilteringThre: 2.0
     localTerrainMapRadius: 4.0
+    cloud_topic_name: "/cloud_map"
+    odom_topic_name: "/Odometry"
