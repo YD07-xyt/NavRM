@@ -24,9 +24,6 @@ from launch_ros.actions import LoadComposableNodes
 from launch_ros.actions import Node
 from launch_ros.descriptions import ComposableNode, ParameterFile
 from nav2_common.launch import RewrittenYaml
-from launch.launch_description_sources import PythonLaunchDescriptionSource, FrontendLaunchDescriptionSource
-from launch.actions import (DeclareLaunchArgument, GroupAction,
-                            IncludeLaunchDescription, SetEnvironmentVariable)
 
 
 def generate_launch_description():
@@ -43,16 +40,13 @@ def generate_launch_description():
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
 
-    lifecycle_nodes = [
-                       'map_server',
-                       'controller_server',
+    lifecycle_nodes = ['controller_server',
                        'smoother_server',
                        'planner_server',
                        'behavior_server',
                        'bt_navigator',
                        'waypoint_follower',
-                       'velocity_smoother'
-                       ]
+                       'velocity_smoother']
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -71,13 +65,13 @@ def generate_launch_description():
     configured_params = ParameterFile(
         RewrittenYaml(
             source_file=params_file,
-            root_key=namespace,
+            #root_key=namespace,
             param_rewrites=param_substitutions,
             convert_types=True),
         allow_substs=True)
 
     stdout_linebuf_envvar = SetEnvironmentVariable(
-        'RCUTILS_LOGGING_BUFFERED_STREAM', '1') 
+        'RCUTILS_LOGGING_BUFFERED_STREAM', '1')
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -94,6 +88,7 @@ def generate_launch_description():
         default_value=os.path.join(bringup_dir, 'config', 'nav2_param.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
+
     declare_autostart_cmd = DeclareLaunchArgument(
         'autostart', default_value='true',
         description='Automatically startup the nav2 stack')
@@ -107,26 +102,16 @@ def generate_launch_description():
         description='the name of conatiner that nodes will load in if use composition')
 
     declare_use_respawn_cmd = DeclareLaunchArgument(
-        'use_respawn', default_value='True',
+        'use_respawn', default_value='False',
         description='Whether to respawn if a node crashes. Applied when composition is disabled.')
 
     declare_log_level_cmd = DeclareLaunchArgument(
-        'log_level', default_value='error',
+        'log_level', default_value='info',
         description='log level')
 
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(['not ', use_composition])),
         actions=[
-            Node(
-                package='nav2_map_server',
-                executable='map_server',
-                name='map_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
             Node(
                 package='nav2_controller',
                 executable='controller_server',
@@ -151,8 +136,8 @@ def generate_launch_description():
                 executable='planner_server',
                 name='planner_server',
                 output='screen',
-                # respawn=use_respawn,
-                # respawn_delay=2.0,
+                respawn=use_respawn,
+                respawn_delay=2.0,
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
@@ -186,7 +171,7 @@ def generate_launch_description():
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
-              Node(
+            Node(
                 package='nav2_velocity_smoother',
                 executable='velocity_smoother',
                 name='velocity_smoother',
@@ -196,7 +181,7 @@ def generate_launch_description():
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings +
-                        [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),  
+                        [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
@@ -213,12 +198,6 @@ def generate_launch_description():
         condition=IfCondition(use_composition),
         target_container=container_name_full,
         composable_node_descriptions=[
-            ComposableNode(
-                package='nav2_map_server',
-                plugin='nav2_map_server::MapServer',
-                name='map_server',
-                parameters=[configured_params],
-                remappings=remappings),
             ComposableNode(
                 package='nav2_controller',
                 plugin='nav2_controller::ControllerServer',
@@ -271,53 +250,6 @@ def generate_launch_description():
                              'node_names': lifecycle_nodes}]),
         ],
     )
-    
-    # start_terrain_analysis = IncludeLaunchDescription(
-    #     FrontendLaunchDescriptionSource(os.path.join(
-    #     get_package_share_directory('terrain_analysis'), 'launch', 'terrain_analysis.launch')
-    #     )
-    # )
-    
-    # start_terrain_analysis_t = Node(
-    #     package='sensor_scan_generation',
-    #     executable='sensorScanGeneration',
-    #     output='screen',
-    #     remappings=[('/registered_scan', '/terrain_map'),
-    #                     ('/sensor_scan', '/terrain_map_at_scan')]
-    # )
-
-    # start_terrain_analysis_ext = IncludeLaunchDescription(
-    #     FrontendLaunchDescriptionSource(os.path.join(
-    #     get_package_share_directory('terrain_analysis_ext'), 'launch', 'terrain_analysis_ext.launch')
-    #     ),
-    #     # launch_arguments={
-    #     # 'checkTerrainConn': checkTerrainConn,
-    #     # }.items()
-    # )
-    
-    # start_terrain_analysis_ext_t = Node(
-    #     package='sensor_scan_generation',
-    #     executable='sensorScanGeneration',
-    #     output='screen',
-    #     remappings=[('/registered_scan', '/terrain_map_ext'),
-    #                     ('/sensor_scan', '/terrain_map_ext_at_scan')]
-    # )
-
-    # ground_segmentation_node_param = os.path.join(bringup_dir, 'params', 'segmentation_params.yaml')
-    # ground_segmentation_node = Node(
-    #         package='linefit_ground_segmentation_ros',
-    #         executable='ground_segmentation_node',
-    #         output='screen',
-    #         parameters=[ground_segmentation_node_param])
-    
-    rviz_config_file = os.path.join(
-    get_package_share_directory('nav2'), 'rviz', 'map.rviz')
-    start_rviz = Node(
-        package='rviz2',
-        executable='rviz2',
-        arguments=['-d', rviz_config_file,'--ros-args', '--log-level', 'warn'],
-        output='screen'
-    )
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -334,13 +266,8 @@ def generate_launch_description():
     ld.add_action(declare_container_name_cmd)
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
-    # add terrain analysis
-    #ld.add_action(start_terrain_analysis)
-    # ld.add_action(start_terrain_analysis_ext)
-    # ld.add_action(ground_segmentation_node)
     # Add the actions to launch all of the navigation nodes
     ld.add_action(load_nodes)
     ld.add_action(load_composable_nodes)
-    ld.add_action(start_rviz)
 
     return ld

@@ -1,0 +1,32 @@
+ground_segmentation:
+  ros__parameters:
+    n_threads: 4
+    
+    # 距离范围 - 缩小范围以适应稀疏点云
+    r_min: 0.78
+    r_max: 10                    # 从20减少到10
+    
+    # 分箱参数 - 关键修改
+    n_bins: 80                   # 从140减少到80（径向分箱）
+    n_segments: 60               # 从360大幅减少到60（每个扇区6度）
+    
+    # 拟合参数 - 放宽容差
+    max_dist_to_line: 0.15       # 保持不变
+    sensor_height: 0.53          # 保持不变
+    min_slope: -1.5
+    max_slope: 1.5
+    max_fit_error: 0.15          # 从0.05增加到0.15
+    
+    # 地面跟踪参数
+    long_threshold: 1.0
+    max_long_height: 0.15
+    max_start_height: 0.2
+    line_search_angle: 0.8
+    
+    gravity_aligned_frame: ""
+    latch: false
+    visualize: false              # 临时开启可视化调试
+    
+    input_topic: "/lio/cloud_world"
+    obstacle_output_topic: "/segmentation/obstacle"
+    ground_output_topic: "/segmentation/ground"

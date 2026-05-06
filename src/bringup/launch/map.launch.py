@@ -64,19 +64,35 @@ def generate_launch_description():
             )
         ],
     )
+    cpp_lidar_filter_node  = Node(
+                package='cpp_lidar_filter',
+                executable='lidar_filter_node',
+                name='my_lidar_filter',
+                output='screen',
+                parameters=[{
+                    # 'input_topic': '/patchworkpp/nonground',
+                    'input_topic': '/cloud_registered',
+                    'output_topic': '/lidar_filtered',
+                    'min_x': -0.2, 'max_x': 0.2,
+                    'min_y': -0.2, 'max_y': 0.4,
+                    'min_z': -0.2, 'max_z': 1.0,
+                    'negative': True,   # 挖掉车身
+                    'leaf_size': 0.05   # 降采样
+                }])
     #[0.127,0.075,-0.435,-0.102,0.5044,-1.57]
+    #[-0.038,0.0,0.433,3.14,0.0,0.0]
     static_base_link_to_livox_frame = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
         arguments=[
             "--x",
-            "-0",
+            "-0.038",
             "--y",
-            "-0",
+            "-0.0",
             "--z",
-            "0",
+            "0.433",
             "--roll",
-            "0",
+            "3.14",
             "--pitch",
             "-0",
             "--yaw",
@@ -164,5 +180,5 @@ def generate_launch_description():
             "-f", "map"]  # 启动参数：-f 指定固定帧（适配你的点云frame_id）
     )
     return LaunchDescription([livox_driver_node,small_point_lio_node, 
-                              static_base_link_to_livox_frame,terrain_analysis_node,
+                              static_base_link_to_livox_frame,terrain_analysis_node,cpp_lidar_filter_node,
                               terrain_analysis_ext_node,pointcloud_to_laserscan_node,rviz2_node])

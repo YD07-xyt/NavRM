@@ -1,5 +1,45 @@
 # NavRM
 
+## run
+```bash
+source install/setup.sh
+ros2 launch livox_ros_driver2 msg_MID360_launch.py
+```
+```bash
+source install/setup.sh
+ros2 launch patchworkpp patchworkpp.launch.py visualize:=false use_sim_time:=false cloud_topic:=/lio/cloud_world base_frame:=world
+```
+```bash
+source install/setup.sh
+ros2 launch terrain_analysis terrain_analysis.launch.py
+```
+```bash
+source install/setup.sh
+ros2 launch terrain_analysis_ext terrain_analysis_ext.launch.py
+```
+```bash
+source install/setup.sh
+ros2 launch fake_vel_transform  fake_vel_transform_launch.py 
+```
+```bash
+source install/setup.sh
+ros2 launch pointcloud_to_laserscan pointcloud_to_laserscan_launch.py
+```
+```bash
+source install/setup.sh
+ros2 launch super_lio Livox_mid360.py
+```
+```bash
+source install/setup.sh
+ros2 launch nav2 navigation.launch.py
+```
+```bash
+source install/setup.sh
+ros2 launch nav2 slam_toolbox.launch.py
+```
+```bash
+ros2 run tf2_ros static_transform_publisher             --x 0.0 --y 0.0 --z 0 --roll 0 --pitch 0 --yaw 0             --frame-id map             --child-frame-id world
+```
 ## env build
 
 
